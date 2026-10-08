@@ -4,7 +4,7 @@
 
 ## 正式 Android 开发
 
-`android/` 包含 Kotlin + Jetpack Compose 建档→目标→训练地点/器械→确认资料。用户已接受所需 SDK 许可，debug APK 与设备测试 APK 均已成功编译；8 项业务JUnit测试通过，主APK签名和完整性已核验。**尚未真机/模拟器运行，也未执行设备交互测试**。环境、测试、构建与隐私边界见 [`android/README.md`](android/README.md)。无帐号、无服务器、仅本次会话内存，不调用AI、不生成训练处方。
+`android/` v0.1.1 包含 Kotlin + Jetpack Compose 建档→目标→训练地点/器械→确认资料，已重做运动风卡片UI、原创器械插画和adaptive launcher图标。debug APK 与设备测试 APK 成功编译；8 项业务JUnit、9 项主机Compose/布局/对比度测试及2项资源测试通过，主APK签名和完整性已核验。**已有Robolectric交互与实际离屏渲染验证，尚未真机/模拟器运行或执行设备交互测试**。环境、测试、构建与隐私边界见 [`android/README.md`](android/README.md)，设计依据见 [`docs/ui-design.md`](docs/ui-design.md)。无帐号、无服务器、仅本次会话内存，不调用AI、不生成训练处方。
 
 ## 运行交互验证
 
