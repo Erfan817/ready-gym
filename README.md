@@ -4,7 +4,7 @@
 
 ## 正式 Android 开发
 
-`android/` 新建 Kotlin + Jetpack Compose 建档→目标→训练地点/器械→确认资料源代码；业务JUnit测试已实际通过。当前Android SDK许可待用户阅读接受，debug APK构建实际失败，**尚无APK，Compose未编译/未真机验证**。环境、测试、构建与隐私边界见 [`android/README.md`](android/README.md)。无帐号、无服务器、仅本次会话内存，不调用AI、不生成训练处方。
+`android/` 包含 Kotlin + Jetpack Compose 建档→目标→训练地点/器械→确认资料。用户已接受所需 SDK 许可，debug APK 与设备测试 APK 均已成功编译；8 项业务JUnit测试通过，主APK签名和完整性已核验。**尚未真机/模拟器运行，也未执行设备交互测试**。环境、测试、构建与隐私边界见 [`android/README.md`](android/README.md)。无帐号、无服务器、仅本次会话内存，不调用AI、不生成训练处方。
 
 ## 运行交互验证
 
@@ -40,4 +40,4 @@ npm run build
 
 ## TDD
 
-React 交互验证逐轮先新增测试、实际运行预期失败，再最小实现并全套回归：边界说明 → 文字肌群开关 → SVG 同步 → Enter/空格 → 肌群并集筛选。安卓业务模型有独立测试；Android UI 和 APK 尚未完成编译与运行验证，详见 `android/README.md`。
+React 交互验证逐轮先新增测试、实际运行预期失败，再最小实现并全套回归：边界说明 → 文字肌群开关 → SVG 同步 → Enter/空格 → 肌群并集筛选。安卓业务模型有独立测试；Android UI 和 APK 已完成编译，但未进行设备运行验证，详见 `android/README.md`。
