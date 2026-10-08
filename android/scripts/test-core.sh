@@ -9,4 +9,4 @@ mkdir -p "$OUT"
 CP="$LIB/kotlin-stdlib-1.9.23.jar:$TOOLS/downloads/junit.jar:$TOOLS/downloads/hamcrest.jar"
 mapfile -t SOURCES < <(find core/src -name '*.kt' -type f)
 "$JAVA" -cp "$LIB/*" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler -no-stdlib -no-reflect -jvm-target 17 -classpath "$CP" -d "$OUT" "${SOURCES[@]}"
-"$JAVA" -cp "$OUT:$CP" org.junit.runner.JUnitCore com.readygym.core.OnboardingTest
+"$JAVA" -cp "$OUT:$CP" org.junit.runner.JUnitCore com.readygym.core.OnboardingTest com.readygym.core.PlanningTest

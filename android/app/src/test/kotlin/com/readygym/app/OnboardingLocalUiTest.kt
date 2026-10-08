@@ -80,11 +80,11 @@ class OnboardingLocalUiTest {
     }
     @Test fun usageNotesAreCollapsedUntilRequested() {
         compose.onNodeWithText("先认识一下你").assertExists()
-        compose.onNodeWithText("本版不提供医疗建议或训练计划；不根据BMI推断能力。", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("本版提供未专业审核的规则草稿，未接AI；不提供医疗建议，不根据BMI推断能力。", substring = true).assertDoesNotExist()
         compose.onNodeWithText("使用说明").performScrollTo().performClick()
-        compose.onNodeWithText("本版不提供医疗建议或训练计划；不根据BMI推断能力。", substring = true).assertExists()
+        compose.onNodeWithText("本版提供未专业审核的规则草稿，未接AI；不提供医疗建议，不根据BMI推断能力。", substring = true).assertExists()
         compose.onNodeWithText("使用说明").performClick()
-        compose.onNodeWithText("本版不提供医疗建议或训练计划；不根据BMI推断能力。", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("本版提供未专业审核的规则草稿，未接AI；不提供医疗建议，不根据BMI推断能力。", substring = true).assertDoesNotExist()
     }
     @Test fun equipmentIllustrationCardsExposeIndependentCheckboxes() {
         conditions()

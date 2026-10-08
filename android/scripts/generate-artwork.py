@@ -2,13 +2,13 @@
 No remote assets. Pillow is only needed for PNG exports, not Android builds.
 """
 from pathlib import Path
-from xml.sax.saxutils import escape
 from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[1]
 RES = ROOT/'app/src/main/res'
 OUT = ROOT/'build/verification/artwork'
 OUT.mkdir(parents=True, exist_ok=True)
-CHARCOAL='#111513'; LIME='#D0FA69'; LIGHT='#C4CDCB'; MID='#737F7D'; DARK='#3F4947'
+CREAM='#FFF9F1'; ORANGE='#F2781F'; GREEN='#28734C'
+LIGHT='#65756A'; MID='#4C5F52'; DARK='#2F4135'; HIGHLIGHT='#758176'
 class Art:
     def __init__(self, size, name):
         self.size=size; self.name=name; self.paths=[]
@@ -38,7 +38,7 @@ a.circle(125,65,11,LIGHT); a.polygon([(49,80),(65,65),(110,64),(115,78),(69,94)]
 a.polygon([(56,77),(62,91),(34,122),(16,126),(18,119)],MID)
 a.polygon([(99,72),(110,78),(105,105),(130,121),(126,130),(94,109)],LIGHT)
 a.polygon([(70,76),(76,89),(62,123),(46,128),(42,121)],MID)
-a.rect(124,124,17,6,LIGHT); a.line([(71,69),(104,69)],'#E3E9E7',2); a.save()
+a.rect(124,124,17,6,LIGHT); a.line([(71,69),(104,69)],HIGHLIGHT,2); a.save()
 # Cast-iron dumbbell with paired hex plates, collars, knurled handle.
 a=Art(160,'equipment_dumbbell'); a.line([(25,126),(139,126)],DARK,2)
 a.rect(48,75,68,11,MID); a.rect(67,77,27,7,LIGHT)
@@ -47,7 +47,7 @@ for x in [25,104]:
     a.polygon([(x,57),(x+19,50),(x+30,58),(x+30,102),(x+13,110),(x,102)],DARK)
     a.polygon([(x,57),(x+13,64),(x+13,110),(x,102)],MID)
     a.polygon([(x+13,64),(x+30,58),(x+30,102),(x+13,110)],LIGHT)
-    a.line([(x+17,68),(x+25,65)],'#E4EBE8',2)
+    a.line([(x+17,68),(x+25,65)],HIGHLIGHT,2)
 a.rect(51,73,5,15,LIGHT); a.rect(99,73,5,15,LIGHT); a.save()
 # Olympic barbell: long metal shaft, weight discs and narrow end sleeves.
 a=Art(160,'equipment_barbell'); a.line([(13,130),(146,130)],DARK,2)
@@ -55,7 +55,7 @@ a.rect(8,82,144,7,MID); a.rect(47,83,66,4,LIGHT)
 for x in [23,118]:
     a.rect(x,54,9,62,DARK); a.rect(x+9,48,13,74,LIGHT)
     a.rect(x+11,51,3,68,MID); a.rect(x+22,63,6,45,MID)
-    a.line([(x+12,54),(x+18,54)],'#E4EBE8',2)
+    a.line([(x+12,54),(x+18,54)],HIGHLIGHT,2)
 a.rect(17,80,5,12,LIGHT); a.rect(148,80,5,12,LIGHT); a.save()
 # Cable machine: twin uprights, top pulley crossbeam, weight stack, cable and handle.
 a=Art(160,'equipment_machine'); a.line([(25,135),(142,135)],DARK,3)
@@ -69,14 +69,15 @@ a.line([(99,79),(108,70),(117,79)],LIGHT,3); a.line([(99,79),(117,79)],LIGHT,3)
 a.rect(87,107,28,7,MID); a.rect(98,113,5,16,LIGHT); a.save()
 # Flat adaptive mark: dumbbell bar folds into a check. Keep all ink in safe zone.
 a=Art(108,'ic_launcher_foreground')
-a.line([(38,53),(47,53),(55,63),(74,42)],LIME,6)
-a.line([(72,52),(76,52)],LIME,6)
+a.line([(38,53),(47,53)],ORANGE,6)
+a.line([(47,53),(55,63),(74,42)],GREEN,6)
+a.line([(72,52),(76,52)],ORANGE,6)
 for x in [27,76]:
-    a.rect(x,40,6,28,LIME); a.rect(x+6,35,7,38,LIME)
+    a.rect(x,40,6,28,ORANGE); a.rect(x+6,35,7,38,ORANGE)
 a.save()
-a=Art(108,'ic_launcher_background'); a.rect(0,0,108,108,CHARCOAL); a.save()
-# Matching flat PNG icon on a charcoal squircle (preview, not device screenshot).
-im=Image.new('RGBA',(432,432)); d=ImageDraw.Draw(im); d.rounded_rectangle((0,0,431,431),radius=96,fill=CHARCOAL)
+a=Art(108,'ic_launcher_background'); a.rect(0,0,108,108,CREAM); a.save()
+# Matching orange/green mark on warm white (preview, not device screenshot).
+im=Image.new('RGBA',(432,432)); d=ImageDraw.Draw(im); d.rounded_rectangle((0,0,431,431),radius=96,fill=CREAM)
 im.alpha_composite(Image.open(OUT/'ic_launcher_foreground.png')); im.save(OUT/'ready-gym-icon.png')
 for name in ['ic_launcher','ic_launcher_round']:
     p=RES/'mipmap-anydpi-v26'; p.mkdir(parents=True,exist_ok=True)

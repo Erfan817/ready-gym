@@ -1,10 +1,11 @@
 <resources>
-    <style name="Theme.ReadyGym" parent="android:style/Theme.Material.NoActionBar">
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar">false</item>
-        <item name="android:statusBarColor">#111513</item>
-        <item name="android:navigationBarColor">#111513</item>
-        <item name="android:windowBackground">#111513</item>
-        <item name="android:colorAccent">#D0FA69</item>
+    <style name="Theme.ReadyGym" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:statusBarColor">#FFF9F1</item>
+        <item name="android:navigationBarColor">#FFF9F1</item>
+        <item name="android:windowBackground">#FFF9F1</item>
+        <item name="android:colorAccent">#BE4708</item>
+        <item name="android:forceDarkAllowed">false</item>
     </style>
 </resources>

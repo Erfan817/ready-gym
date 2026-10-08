@@ -1,43 +1,47 @@
 # Ready Gym
 
-最终产品方向：**安卓 APP**。`frontend/` 仅为已开始的人体点选交互验证，不是最终 APP，也不按 Web/PWA 方向继续扩展。原有规划文档本次未修改。
+目标产品：安卓健身 APP，围绕建档、器械条件、训练计划、动作演示与反馈调整。当前交付 **v0.2.0 测试版**，不是完整商业产品。
 
-## 正式 Android 开发
+## 当前安卓功能
 
-`android/` v0.1.1 包含 Kotlin + Jetpack Compose 建档→目标→训练地点/器械→确认资料，已重做运动风卡片UI、原创器械插画和adaptive launcher图标。debug APK 与设备测试 APK 成功编译；8 项业务JUnit、9 项主机Compose/布局/对比度测试及2项资源测试通过，主APK签名和完整性已核验。**已有Robolectric交互与实际离屏渲染验证，尚未真机/模拟器运行或执行设备交互测试**。环境、测试、构建与隐私边界见 [`android/README.md`](android/README.md)，设计依据见 [`docs/ui-design.md`](docs/ui-design.md)。无帐号、无服务器、仅本次会话内存，不调用AI、不生成训练处方。
+- 阳光浅色 UI：暖白底、白卡片、橙色按钮、绿色点缀；原创器械插画与 adaptive launcher 图标。
+- 建档：基本资料 → 目标 → 地点单选 / 器械多选 → 明确确认。
+- 训练偏好：每周2/3/4天、20/30/45/60分钟、初学/恢复训练；进阶明确不支持。
+- 用户明确填写当前不适与医学限制后，生成确定性的规则草稿；可查看七日安排、休息日、组次/秒数、休息、肌群与估算时长。
+- 草稿与生效计划分开，确认后才采用。重新生成、器械替换先出提案，不默默覆盖旧版；无候选与风险反馈有明示。
+- 动作详情有中文要点和注意事项。**真实离线GIF目前仅徒手深蹲**，支持用户发起播放、暂停和继续；其他五项明确缺素材，未用相似动作冒充。
 
-## 运行交互验证
+**边界**：未接模型/Agent、无账号或服务器、无训练日志或自动进阶、未专业审核。资料与计划仅在当前会话内存，旋转/退出/Activity重建可能清空；“确认”不是持久保存或安全认证。不联网，不依据BMI或性别推算训练负重。
 
-目录名末尾含空格，请保持引用：
+## 实际验证
+
+- 独立审查三项逻辑修复后全量重新执行：core 39项通过；App主机测试31项中30通过、1个legacy Movie解码探针跳过；合计 **69通过、0失败/0错误、1跳过**。
+- 原创资源2项与真实GIF文件契约1项通过。
+- `:core:test :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest --rerun-tasks` 构建成功；主APK签名、ZIP完整性、zipalign、包名和版本核验通过。最终日志与实物报告见 `android/build/verification/review-fixes/`；父复验与二次独立审查待进行。
+- 已执行Robolectric Compose交互与离屏渲染检查，**不是手机截图或真机验收**；真实软键盘、系统栏、TalkBack、计划屏全尺寸适配及Android26/27 GIF仍待设备验证。
+
+构建与安装见 [`android/README.md`](android/README.md)。规则API见 [`android/core/README.md`](android/core/README.md)；媒体出处见 [`android/docs/media-attribution.md`](android/docs/media-attribution.md)。
+
+## 后续开发
+
+按用户要求，当前版本验收后继续真实AI接入：服务端模型调用 → 结构化提案 → 规则校验 → 用户确认。供应商、凭据、费用与最小数据授权尚待确认；不将Hermes自身凭据放进产品或APK。设计/范围见 [`docs/ui-design.md`](docs/ui-design.md) 与 [`docs/plan-system.md`](docs/plan-system.md)。
+
+## 动作与素材来源
+
+hasaneyldrm/exercises-dataset 固定提交JSON下载仍超时，**未导入该仓库动作或媒体**；它的数据许可与Gym visual媒体许可分离。当前规则目录是明确自编、未专业审核的6个动作元数据，不伪造上游ID。
+
+深蹲GIF来自 Wensceslao《Squats.gif》，**CC BY-SA 4.0**；保留原字节、作者及许可链接，独立于应用代码许可。其余媒体缺口如实列出，器械静态插画是原创资源。
+
+## 保留的 Web 交互实验
+
+`frontend/` 是早期React肌群点选实验，不是正式客户端，也不继续作为Web/PWA扩展。人工演示数据不是上游数据；没有计划/Agent/GIF。
 
 ```sh
 cd '/home/ubuntu/ready gym /frontend'
 npm ci
-npm run dev
-```
-
-本次未启动常驻服务。验证命令：
-
-```sh
 npm test
 npm run typecheck
 npm run build
 ```
 
-## 已完成与边界
-
-- React + TypeScript + Vite；Vitest + Testing Library 真实点击与键盘交互测试。
-- 简化正反面 SVG，胸、背、肩、手臂、核心、腿点选；文字按钮同步，勾选、标签、描边和 aria-pressed 不只依赖颜色。
-- 按所选肌群取并集筛选人工演示动作；未选时显示全部。
-- 动作卡片的查看按钮禁用：详情尚未实现。器械筛选、搜索、空状态尚未实现；收到安卓方向调整后停止新增功能。
-- 未接入 Agent、后端、登录、建档、训练计划、GIF、练后反馈、调整或器械替换。无训练处方。动作信息未经专业审核。
-
-## 数据
-
-`frontend/src/data/demoExercises.ts` 是人工编写的界面演示数据，ID 以 `demo-` 开头，不是源仓库 JSON，不包含动作步骤或已审核安全建议。
-
-尝试从 https://github.com/hasaneyldrm/exercises-dataset 固定提交 `7455efae41b330c265e7cd4b78dfa848e7ce5ebd` 获取非媒体数据：GitHub API 查到提交与文件树，读取到 LICENSE 与 NOTICE；完整 JSON 请求超时，未导入或伪造上游内容。数据 MIT 与媒体许可分离，图片/GIF 不在 MIT 范围内。本项目未下载、复制或热链任何图片/GIF，也未使用上游数据，无上游数据版权声明替代。安卓产品后续使用媒体需单独核实授权。
-
-## TDD
-
-React 交互验证逐轮先新增测试、实际运行预期失败，再最小实现并全套回归：边界说明 → 文字肌群开关 → SVG 同步 → Enter/空格 → 肌群并集筛选。安卓业务模型有独立测试；Android UI 和 APK 已完成编译，但未进行设备运行验证，详见 `android/README.md`。
+本地目录 `ready gym ` 末尾有空格，命令中保持完整引用。SDK、缓存、构建产物、密钥和个人记录不提交Git。
