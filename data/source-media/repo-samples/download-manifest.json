@@ -1,0 +1,55 @@
+{
+  "repository": "https://github.com/hasaneyldrm/exercises-dataset",
+  "revision": "7455efae41b330c265e7cd4b78dfa848e7ce5ebd",
+  "downloaded_count": 3,
+  "files": [
+    {
+      "source_path": "videos/0025-EIeI8Vf.gif",
+      "local_file": "/home/ubuntu/ready gym /data/source-media/repo-samples/0025-EIeI8Vf.gif",
+      "git_blob_sha1": "74ec3cb38a82ed536e9c8398bcfa34d7ebd0d69c",
+      "sha256": "2de66afbc9229d7c23b888b39b3c6a917ce950b429082050be29bd8f96c85d75",
+      "bytes": 124389,
+      "dimensions": [
+        180,
+        180
+      ],
+      "frames": 12,
+      "duration_ms": 3000,
+      "attribution": "© Gym visual — https://gymvisual.com/",
+      "authorization": "用户声明已取得Ready Gym使用授权；未审阅授权文件",
+      "plan_mapping": "仓库原始样本，不将杠铃动作冒充徒手变式"
+    },
+    {
+      "source_path": "videos/0043-qXTaZnJ.gif",
+      "local_file": "/home/ubuntu/ready gym /data/source-media/repo-samples/0043-qXTaZnJ.gif",
+      "git_blob_sha1": "30e2aa51c864de019503872e62f74371643e5c21",
+      "sha256": "3c1e29f67ffaae89316c94d7af42fcbe2cbf379967c27c1d30fa0205b6f9ed30",
+      "bytes": 88019,
+      "dimensions": [
+        180,
+        180
+      ],
+      "frames": 12,
+      "duration_ms": 3000,
+      "attribution": "© Gym visual — https://gymvisual.com/",
+      "authorization": "用户声明已取得Ready Gym使用授权；未审阅授权文件",
+      "plan_mapping": "仓库原始样本，不将杠铃动作冒充徒手变式"
+    },
+    {
+      "source_path": "videos/0032-ila4NZS.gif",
+      "local_file": "/home/ubuntu/ready gym /data/source-media/repo-samples/0032-ila4NZS.gif",
+      "git_blob_sha1": "430c2b4c4aaaafabd2ca140799bba8ffd178c46d",
+      "sha256": "85ca4e4f562df04d5b3d4f5378792873e4fab954c850f7104e14161f680dd568",
+      "bytes": 83236,
+      "dimensions": [
+        180,
+        180
+      ],
+      "frames": 12,
+      "duration_ms": 3000,
+      "attribution": "© Gym visual — https://gymvisual.com/",
+      "authorization": "用户声明已取得Ready Gym使用授权；未审阅授权文件",
+      "plan_mapping": "仓库原始样本，不将杠铃动作冒充徒手变式"
+    }
+  ]
+}

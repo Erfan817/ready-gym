@@ -1,0 +1,230 @@
+{
+  "source_commit": "7455efae41b330c265e7cd4b78dfa848e7ce5ebd",
+  "authorization_basis": "User declared Ready Gym authorization; permission document not reviewed",
+  "media": [
+    {
+      "id": "3119",
+      "name": "potty squat",
+      "files": [
+        {
+          "source_path": "videos/3119-75Bgtjy.gif",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/3119-75Bgtjy.gif",
+          "git_blob_sha1": "94d87d6b6b088cd802fd8b2b43d1bdbedcfe58b9",
+          "byte_count": 67756,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 12,
+          "distinct_frames": 10,
+          "resolution_constraint_met": true
+        },
+        {
+          "source_path": "images/3119-75Bgtjy.jpg",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/3119-75Bgtjy.jpg",
+          "git_blob_sha1": "3f07d99dc010ca42925a50fec6a9d60517278a64",
+          "byte_count": 5325,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 1,
+          "distinct_frames": 1,
+          "resolution_constraint_met": true
+        }
+      ]
+    },
+    {
+      "id": "3211",
+      "name": "kneeling push-up (male)",
+      "files": [
+        {
+          "source_path": "videos/3211-ZOuKWir.gif",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/3211-ZOuKWir.gif",
+          "git_blob_sha1": "d851018815ab907f38e3decd47d74a6a9aaec25d",
+          "byte_count": 66936,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 12,
+          "distinct_frames": 10,
+          "resolution_constraint_met": true
+        },
+        {
+          "source_path": "images/3211-ZOuKWir.jpg",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/3211-ZOuKWir.jpg",
+          "git_blob_sha1": "ff89f1be66809a056ce995e36a8f30856f88fd9e",
+          "byte_count": 4703,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 1,
+          "distinct_frames": 1,
+          "resolution_constraint_met": true
+        }
+      ]
+    },
+    {
+      "id": "2398",
+      "name": "close-grip push-up (on knees)",
+      "files": [
+        {
+          "source_path": "videos/2398-v3vLFW0.gif",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/2398-v3vLFW0.gif",
+          "git_blob_sha1": "886d3df4fa0b228d3dae2385d8cd347089bb560b",
+          "byte_count": 94352,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 12,
+          "distinct_frames": 10,
+          "resolution_constraint_met": true
+        },
+        {
+          "source_path": "images/2398-v3vLFW0.jpg",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/2398-v3vLFW0.jpg",
+          "git_blob_sha1": "2ad7a74ba147692e1ef9697750a92c955191a865",
+          "byte_count": 6115,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 1,
+          "distinct_frames": 1,
+          "resolution_constraint_met": true
+        }
+      ]
+    },
+    {
+      "id": "3013",
+      "name": "low glute bridge on floor",
+      "files": [
+        {
+          "source_path": "videos/3013-u0cNiij.gif",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/3013-u0cNiij.gif",
+          "git_blob_sha1": "11729443b3d7e24a242871437aa544ee0f3e3c94",
+          "byte_count": 86092,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 12,
+          "distinct_frames": 10,
+          "resolution_constraint_met": true
+        },
+        {
+          "source_path": "images/3013-u0cNiij.jpg",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/3013-u0cNiij.jpg",
+          "git_blob_sha1": "24a8abd26c9760788268e2ed47e09d7eed93393a",
+          "byte_count": 6183,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 1,
+          "distinct_frames": 1,
+          "resolution_constraint_met": true
+        }
+      ]
+    },
+    {
+      "id": "0276",
+      "name": "dead bug",
+      "files": [
+        {
+          "source_path": "videos/0276-iny3m5y.gif",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/0276-iny3m5y.gif",
+          "git_blob_sha1": "939c5b4e7bcea2bff0dde51424df4c66fe0ab471",
+          "byte_count": 74568,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 12,
+          "distinct_frames": 10,
+          "resolution_constraint_met": true
+        },
+        {
+          "source_path": "images/0276-iny3m5y.jpg",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/0276-iny3m5y.jpg",
+          "git_blob_sha1": "df3343cc6c8a8e97d3adbff1f78c06944fa18bea",
+          "byte_count": 5336,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 1,
+          "distinct_frames": 1,
+          "resolution_constraint_met": true
+        }
+      ]
+    },
+    {
+      "id": "0293",
+      "name": "dumbbell bent over row",
+      "files": [
+        {
+          "source_path": "videos/0293-BJ0Hz5L.gif",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/0293-BJ0Hz5L.gif",
+          "git_blob_sha1": "669d6dfa19a081cd738e0b3a456797cd5bec069e",
+          "byte_count": 105292,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 12,
+          "distinct_frames": 10,
+          "resolution_constraint_met": true
+        },
+        {
+          "source_path": "images/0293-BJ0Hz5L.jpg",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/0293-BJ0Hz5L.jpg",
+          "git_blob_sha1": "7962648c5d4ad168f66df273b81d6bc717a42a9e",
+          "byte_count": 8508,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 1,
+          "distinct_frames": 1,
+          "resolution_constraint_met": true
+        }
+      ]
+    },
+    {
+      "id": "0027",
+      "name": "barbell bent over row",
+      "files": [
+        {
+          "source_path": "videos/0027-eZyBC3j.gif",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/0027-eZyBC3j.gif",
+          "git_blob_sha1": "b302a55e123a57cf593f79b8cd49188c91845d1c",
+          "byte_count": 100913,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 12,
+          "distinct_frames": 10,
+          "resolution_constraint_met": true
+        },
+        {
+          "source_path": "images/0027-eZyBC3j.jpg",
+          "local_path": "/home/ubuntu/ready gym /data/source-media/current-plan/0027-eZyBC3j.jpg",
+          "git_blob_sha1": "e24660b776957deb0c479173630504b677c02fe7",
+          "byte_count": 8106,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 1,
+          "distinct_frames": 1,
+          "resolution_constraint_met": true
+        }
+      ]
+    }
+  ]
+}

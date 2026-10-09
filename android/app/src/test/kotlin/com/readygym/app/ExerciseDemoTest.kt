@@ -73,14 +73,14 @@ class ExerciseDemoTest {
         return null
     }
 
-    @Test fun missingMovementHasReadableCuesAndNeverOffersPlay() {
+    @Test fun authorizedRowHasItsOwnGifAndReadableCues() {
         compose.setContent { ReadyGymTheme {
             ExerciseDemo("rg-v1-dumbbell-row", Modifier.verticalScroll(rememberScrollState()))
         } }
         compose.onNodeWithText("双侧俯身哑铃划船").assertExists()
-        compose.onNodeWithText("暂无已核验GIF", substring = true).assertExists()
-        compose.onNodeWithText("播放动作演示").assertDoesNotExist()
-        compose.onNodeWithText("双侧俯身，不借助椅子或训练凳", substring = true).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("暂无已核验GIF", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("播放动作演示").assertExists()
+        compose.onNodeWithText("双侧俯身无凳", substring = true).performScrollTo().assertIsDisplayed()
     }
     @Test fun unknownMovementDoesNotBorrowSquatDemo() {
         compose.setContent { ReadyGymTheme { ExerciseDemo("unrecognized-id") } }
@@ -92,6 +92,8 @@ class ExerciseDemoTest {
             ExerciseDemo("rg-v1-bodyweight-squat", Modifier.verticalScroll(rememberScrollState()))
         } }
         compose.onNodeWithText("点击播放离线GIF").assertExists()
+        compose.waitUntil(5000) { compose.onAllNodesWithContentDescription("徒手深蹲动作静态预览图（不是GIF播放）").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithContentDescription("徒手深蹲动作静态预览图（不是GIF播放）").assertExists()
         compose.onNodeWithText("正在播放").assertDoesNotExist()
         compose.onNodeWithText("播放动作演示").performScrollTo().performClick()
         compose.waitUntil(10000) {

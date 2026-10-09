@@ -6,6 +6,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,6 +19,9 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class OnboardingLocalUiTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
+    @Before fun enterOfflineRules() {
+        compose.onNodeWithText("离线规则模式（不使用AI）").performScrollTo().performClick()
+    }
     private fun conditions() {
         compose.onNodeWithContentDescription("年龄（岁）").performScrollTo().performTextInput("30")
         compose.onNodeWithContentDescription("身高（cm）").performScrollTo().performTextInput("170")

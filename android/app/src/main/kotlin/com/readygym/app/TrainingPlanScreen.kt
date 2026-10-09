@@ -22,13 +22,29 @@ import androidx.compose.ui.unit.sp
 import com.readygym.core.*
 import java.util.UUID
 
-/** Session memory only: no durable saving, backend or model call. */
+/** The offline form is opt-in; chat is the official entry. */
 @Composable
-fun ReadyGymApp() {
+fun ReadyGymApp(client: CoachClient? = null, serviceConfigured: Boolean = BuildConfig.DEBUG && BuildConfig.SERVICE_BASE_URL.isNotBlank()) {
+    val actualClient = remember(client) { client ?: HttpCoachClient(BuildConfig.SERVICE_BASE_URL, BuildConfig.DEBUG) }
+    val activity = androidx.compose.ui.platform.LocalContext.current as androidx.activity.ComponentActivity
+    val coach = remember(activity, actualClient) {
+        androidx.lifecycle.ViewModelProvider(activity, object : androidx.lifecycle.ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T = CoachConversation(actualClient) as T
+        })[if (client == null) "coach-default" else "coach-test-${System.identityHashCode(actualClient)}", CoachConversation::class.java]
+    }
+    var preferences by remember { mutableStateOf<PlanningPreferences?>(null) }
+    var offline by remember { mutableStateOf(false) }
     var profile by remember { mutableStateOf<TrainingProfile?>(null) }
+    androidx.activity.compose.BackHandler(offline || profile != null) {
+        if (profile != null) profile = null else offline = false
+    }
     val current = profile
-    if (current == null) OnboardingScreen(onStartPlanning = { profile = it })
-    else TrainingPlanScreen(current)
+    when {
+        current != null -> TrainingPlanScreen(current, preferences)
+        offline -> OnboardingScreen(onStartPlanning = { preferences = null; profile = it })
+        else -> CoachChatScreen(coach, serviceConfigured, onOffline = { offline = true }, onConfirmed = { preferences = it.preferences; profile = it.profile })
+    }
 }
 
 private data class ReplacementTarget(val plan: PlanDraft, val sessionId: String, val item: PlannedExercise)
@@ -55,12 +71,17 @@ private class SafetyForm {
 }
 
 @Composable
-fun TrainingPlanScreen(profile: TrainingProfile) {
+fun TrainingPlanScreen(profile: TrainingProfile, initialPreferences: PlanningPreferences? = null) {
     val engine = remember { PlanningEngine() }
-    val safety = remember { SafetyForm() }
-    var frequency by remember { mutableIntStateOf(3) }
-    var minutes by remember { mutableIntStateOf(30) }
-    var experience by remember { mutableStateOf(TrainingExperience.BEGINNER) }
+    val safety = remember { SafetyForm().apply {
+        // Only a validated, explicitly confirmed chat self-report may seed untouched fields.
+        initialPreferences?.safety?.takeIf { it.screenCompleted && engine.evaluateSafety(it).route == SafetyRoute.TEMPLATE_ALLOWED }?.let {
+            discomfort = DiscomfortChoice.NONE; medical = MedicalChoice.NONE
+        }
+    } }
+    var frequency by remember { mutableIntStateOf(initialPreferences?.daysPerWeek ?: 3) }
+    var minutes by remember { mutableIntStateOf(initialPreferences?.minutesPerSession ?: 30) }
+    var experience by remember { mutableStateOf(initialPreferences?.experience ?: TrainingExperience.BEGINNER) }
     var draft by remember { mutableStateOf<PlanDraft?>(null) }
     var confirmed by remember { mutableStateOf<PlanDraft?>(null) }
     var editing by remember { mutableStateOf(true) }

@@ -1,0 +1,556 @@
+{
+  "schema_version": 1,
+  "source_commit": "7455efae41b330c265e7cd4b78dfa848e7ce5ebd",
+  "runtime_enabled": false,
+  "contact_sheet": "source-media/current-plan/contact-sheet.jpg",
+  "authorization_basis": "User explicitly stated images and GIFs are authorized for Ready Gym",
+  "permission_document_reviewed": false,
+  "mappings": [
+    {
+      "local_id": "rg-v1-bodyweight-squat",
+      "local_name_zh": "徒手深蹲",
+      "source_id": "3119",
+      "match_status": "instruction_alignment_pending_review",
+      "note_zh": "上游名为 potty squat；中文名不是上游提供的名称。英文指导描述无器械双侧深蹲；仍需人工动作审核。",
+      "source_name": "potty squat",
+      "media_id": "75Bgtjy",
+      "image": "images/3119-75Bgtjy.jpg",
+      "gif_url": "videos/3119-75Bgtjy.gif",
+      "attribution": "© Gym visual — https://gymvisual.com/",
+      "runtime_enabled": false,
+      "media_policy": {
+        "licensed": true,
+        "authorization_basis": "User explicitly stated images and GIFs are authorized for Ready Gym",
+        "permission_document_reviewed": false,
+        "authorization_scope": "Ready Gym, per user declaration; no broader transferable permission asserted",
+        "bundled": false,
+        "hotlink_allowed": false,
+        "status": "user_declared_ready_gym_authorization",
+        "retain_attribution": "© Gym visual — https://gymvisual.com/",
+        "source_resolution_constraint": "180x180",
+        "terms_url": "https://gymvisual.com/content/3-terms-and-conditions-of-use"
+      },
+      "stable_id": "rg-v1-bodyweight-squat",
+      "name": "potty squat",
+      "source_name_zh": null,
+      "display_name_zh": "徒手深蹲",
+      "display_name_zh_origin": "Existing Ready Gym label, not an upstream translation",
+      "instructions": {
+        "en": "Stand with your feet shoulder-width apart, toes pointing slightly outward. Lower your body down by bending your knees and pushing your hips back as if you were sitting on a chair. Keep your chest up and your back straight throughout the movement. Lower yourself until your thighs are parallel to the ground or as low as you can comfortably go. Pause for a moment at the bottom, then push through your heels to return to the starting position. Repeat for the desired number of repetitions.",
+        "zh": "双脚分开与肩同宽站立，脚趾稍微向外。 弯曲膝盖并将臀部向后推，降低身体，就像坐在椅子上一样。 在整个动作过程中保持挺胸、背部挺直。 降低自己，直到大腿与地面平行或尽可能低。 在底部停顿片刻，然后推动脚后跟回到起始位置。 重复所需的重复次数。"
+      },
+      "instruction_steps": {
+        "en": [
+          "Stand with your feet shoulder-width apart, toes pointing slightly outward.",
+          "Lower your body down by bending your knees and pushing your hips back as if you were sitting on a chair.",
+          "Keep your chest up and your back straight throughout the movement.",
+          "Lower yourself until your thighs are parallel to the ground or as low as you can comfortably go.",
+          "Pause for a moment at the bottom, then push through your heels to return to the starting position.",
+          "Repeat for the desired number of repetitions."
+        ],
+        "zh": [
+          "双脚分开与肩同宽站立，脚趾稍微向外。",
+          "弯曲膝盖并将臀部向后推，降低身体，就像坐在椅子上一样。",
+          "在整个动作过程中保持挺胸、背部挺直。",
+          "降低自己，直到大腿与地面平行或尽可能低。",
+          "在底部停顿片刻，然后推动脚后跟回到起始位置。",
+          "重复所需的重复次数。"
+        ]
+      },
+      "equipment": "body weight",
+      "target": "abs",
+      "muscle_group": "quadriceps",
+      "secondary_muscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "source_commit": "7455efae41b330c265e7cd4b78dfa848e7ce5ebd",
+      "media_match_status": "visual_match",
+      "visual_review_note_zh": "联系图可见无器械双脚深蹲，未见额外支撑。",
+      "visual_review_scope": "five sampled GIF frames only, not safety or technique validation",
+      "local_gif_path": "source-media/current-plan/3119-75Bgtjy.gif",
+      "local_image_path": "source-media/current-plan/3119-75Bgtjy.jpg",
+      "media_verification": {
+        "gif_url": {
+          "git_blob_sha1": "94d87d6b6b088cd802fd8b2b43d1bdbedcfe58b9",
+          "byte_count": 67756,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 12,
+          "distinct_frames": 10,
+          "resolution_constraint_met": true
+        },
+        "image": {
+          "git_blob_sha1": "3f07d99dc010ca42925a50fec6a9d60517278a64",
+          "byte_count": 5325,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 1,
+          "distinct_frames": 1,
+          "resolution_constraint_met": true
+        }
+      },
+      "media_gap": false,
+      "text_gap": false
+    },
+    {
+      "local_id": "rg-v1-knee-push-up",
+      "local_name_zh": "跪姿俯卧撑",
+      "source_id": "3211",
+      "match_status": "blocked_instruction_name_conflict",
+      "note_zh": "上游名 kneeling push-up (male)，但中英文指导均要求脚掌支撑、头至脚跟直线，与膝盖支撑矛盾，不可作为直接等价动作。2398 是 close-grip push-up (on knees)，仅为近似窄距变式，不自动替换。",
+      "source_name": "kneeling push-up (male)",
+      "media_id": "ZOuKWir",
+      "image": "images/3211-ZOuKWir.jpg",
+      "gif_url": "videos/3211-ZOuKWir.gif",
+      "attribution": "© Gym visual — https://gymvisual.com/",
+      "runtime_enabled": false,
+      "media_policy": {
+        "licensed": true,
+        "authorization_basis": "User explicitly stated images and GIFs are authorized for Ready Gym",
+        "permission_document_reviewed": false,
+        "authorization_scope": "Ready Gym, per user declaration; no broader transferable permission asserted",
+        "bundled": false,
+        "hotlink_allowed": false,
+        "status": "user_declared_ready_gym_authorization",
+        "retain_attribution": "© Gym visual — https://gymvisual.com/",
+        "source_resolution_constraint": "180x180",
+        "terms_url": "https://gymvisual.com/content/3-terms-and-conditions-of-use"
+      },
+      "stable_id": "rg-v1-knee-push-up",
+      "name": "kneeling push-up (male)",
+      "source_name_zh": null,
+      "display_name_zh": "跪姿俯卧撑",
+      "display_name_zh_origin": "Existing Ready Gym label, not an upstream translation",
+      "instructions": {
+        "en": "Start by kneeling on the ground with your hands shoulder-width apart, fingers pointing forward. Extend your legs behind you, resting on the balls of your feet, so that your body forms a straight line from head to heels. Engage your core and lower your body towards the ground by bending your elbows, keeping them close to your sides. Continue lowering until your chest is just above the ground, then push back up to the starting position by straightening your arms. Repeat for the desired number of repetitions.",
+        "zh": "首先跪在地上，双手与肩同宽，手指指向前方。 将双腿伸到身后，放在脚掌上，使身体从头到脚跟形成一条直线。 弯曲肘部，保持核心靠近身体两侧，将身体压向地面。 继续降低，直到胸部刚好高于地面，然后伸直手臂，将其推回起始位置。 重复所需的重复次数。"
+      },
+      "instruction_steps": {
+        "en": [
+          "Start by kneeling on the ground with your hands shoulder-width apart, fingers pointing forward.",
+          "Extend your legs behind you, resting on the balls of your feet, so that your body forms a straight line from head to heels.",
+          "Engage your core and lower your body towards the ground by bending your elbows, keeping them close to your sides.",
+          "Continue lowering until your chest is just above the ground, then push back up to the starting position by straightening your arms.",
+          "Repeat for the desired number of repetitions."
+        ],
+        "zh": [
+          "首先跪在地上，双手与肩同宽，手指指向前方。",
+          "将双腿伸到身后，放在脚掌上，使身体从头到脚跟形成一条直线。",
+          "弯曲肘部，保持核心靠近身体两侧，将身体压向地面。",
+          "继续降低，直到胸部刚好高于地面，然后伸直手臂，将其推回起始位置。",
+          "重复所需的重复次数。"
+        ]
+      },
+      "equipment": "body weight",
+      "target": "pectorals",
+      "muscle_group": "triceps",
+      "secondary_muscles": [
+        "triceps",
+        "shoulders"
+      ],
+      "source_commit": "7455efae41b330c265e7cd4b78dfa848e7ce5ebd",
+      "media_match_status": "visual_match_instruction_conflict",
+      "visual_review_note_zh": "联系图可见膝盖支撑；上游中英文指导却写脚掌支撑。GIF可用于跪姿候选，不能直接采用矛盾指导。",
+      "visual_review_scope": "five sampled GIF frames only, not safety or technique validation",
+      "local_gif_path": "source-media/current-plan/3211-ZOuKWir.gif",
+      "local_image_path": "source-media/current-plan/3211-ZOuKWir.jpg",
+      "media_verification": {
+        "gif_url": {
+          "git_blob_sha1": "d851018815ab907f38e3decd47d74a6a9aaec25d",
+          "byte_count": 66936,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 12,
+          "distinct_frames": 10,
+          "resolution_constraint_met": true
+        },
+        "image": {
+          "git_blob_sha1": "ff89f1be66809a056ce995e36a8f30856f88fd9e",
+          "byte_count": 4703,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 1,
+          "distinct_frames": 1,
+          "resolution_constraint_met": true
+        }
+      },
+      "media_gap": false,
+      "text_gap": true
+    },
+    {
+      "local_id": "rg-v1-glute-bridge",
+      "local_name_zh": "徒手臀桥",
+      "source_id": "3013",
+      "match_status": "instruction_alignment_pending_review",
+      "note_zh": "low glute bridge on floor；地面双侧无负重，不使用训练凳或杠铃。",
+      "source_name": "low glute bridge on floor",
+      "media_id": "u0cNiij",
+      "image": "images/3013-u0cNiij.jpg",
+      "gif_url": "videos/3013-u0cNiij.gif",
+      "attribution": "© Gym visual — https://gymvisual.com/",
+      "runtime_enabled": false,
+      "media_policy": {
+        "licensed": true,
+        "authorization_basis": "User explicitly stated images and GIFs are authorized for Ready Gym",
+        "permission_document_reviewed": false,
+        "authorization_scope": "Ready Gym, per user declaration; no broader transferable permission asserted",
+        "bundled": false,
+        "hotlink_allowed": false,
+        "status": "user_declared_ready_gym_authorization",
+        "retain_attribution": "© Gym visual — https://gymvisual.com/",
+        "source_resolution_constraint": "180x180",
+        "terms_url": "https://gymvisual.com/content/3-terms-and-conditions-of-use"
+      },
+      "stable_id": "rg-v1-glute-bridge",
+      "name": "low glute bridge on floor",
+      "source_name_zh": null,
+      "display_name_zh": "徒手臀桥",
+      "display_name_zh_origin": "Existing Ready Gym label, not an upstream translation",
+      "instructions": {
+        "en": "Lie flat on your back with your knees bent and feet flat on the ground. Place your arms by your sides, palms facing down. Engage your glutes and core, then lift your hips off the ground until your body forms a straight line from your knees to your shoulders. Pause for a moment at the top, squeezing your glutes. Slowly lower your hips back down to the starting position. Repeat for the desired number of repetitions.",
+        "zh": "平躺，膝盖弯曲，双脚平放在地上。 将手臂放在身体两侧，手掌朝下。 启动臀肌和核心肌群，然后将臀部抬离地面，直到身体从膝盖到肩膀形成一条直线。 在顶部暂停片刻，挤压臀部。 慢慢地将臀部放回起始位置。 重复所需的重复次数。"
+      },
+      "instruction_steps": {
+        "en": [
+          "Lie flat on your back with your knees bent and feet flat on the ground.",
+          "Place your arms by your sides, palms facing down.",
+          "Engage your glutes and core, then lift your hips off the ground until your body forms a straight line from your knees to your shoulders.",
+          "Pause for a moment at the top, squeezing your glutes.",
+          "Slowly lower your hips back down to the starting position.",
+          "Repeat for the desired number of repetitions."
+        ],
+        "zh": [
+          "平躺，膝盖弯曲，双脚平放在地上。",
+          "将手臂放在身体两侧，手掌朝下。",
+          "启动臀肌和核心肌群，然后将臀部抬离地面，直到身体从膝盖到肩膀形成一条直线。",
+          "在顶部暂停片刻，挤压臀部。",
+          "慢慢地将臀部放回起始位置。",
+          "重复所需的重复次数。"
+        ]
+      },
+      "equipment": "body weight",
+      "target": "glutes",
+      "muscle_group": "hamstrings",
+      "secondary_muscles": [
+        "hamstrings",
+        "core"
+      ],
+      "source_commit": "7455efae41b330c265e7cd4b78dfa848e7ce5ebd",
+      "media_match_status": "visual_match",
+      "visual_review_note_zh": "联系图可见双侧地面臀桥，无凳、无外加负重。",
+      "visual_review_scope": "five sampled GIF frames only, not safety or technique validation",
+      "local_gif_path": "source-media/current-plan/3013-u0cNiij.gif",
+      "local_image_path": "source-media/current-plan/3013-u0cNiij.jpg",
+      "media_verification": {
+        "gif_url": {
+          "git_blob_sha1": "11729443b3d7e24a242871437aa544ee0f3e3c94",
+          "byte_count": 86092,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 12,
+          "distinct_frames": 10,
+          "resolution_constraint_met": true
+        },
+        "image": {
+          "git_blob_sha1": "24a8abd26c9760788268e2ed47e09d7eed93393a",
+          "byte_count": 6183,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 1,
+          "distinct_frames": 1,
+          "resolution_constraint_met": true
+        }
+      },
+      "media_gap": false,
+      "text_gap": false
+    },
+    {
+      "local_id": "rg-v1-dead-bug",
+      "local_name_zh": "死虫式核心练习",
+      "source_id": "0276",
+      "match_status": "instruction_alignment_pending_review",
+      "note_zh": "dead bug；仰卧交替对侧手脚，指导仅原样引用，不构成安全认证。",
+      "source_name": "dead bug",
+      "media_id": "iny3m5y",
+      "image": "images/0276-iny3m5y.jpg",
+      "gif_url": "videos/0276-iny3m5y.gif",
+      "attribution": "© Gym visual — https://gymvisual.com/",
+      "runtime_enabled": false,
+      "media_policy": {
+        "licensed": true,
+        "authorization_basis": "User explicitly stated images and GIFs are authorized for Ready Gym",
+        "permission_document_reviewed": false,
+        "authorization_scope": "Ready Gym, per user declaration; no broader transferable permission asserted",
+        "bundled": false,
+        "hotlink_allowed": false,
+        "status": "user_declared_ready_gym_authorization",
+        "retain_attribution": "© Gym visual — https://gymvisual.com/",
+        "source_resolution_constraint": "180x180",
+        "terms_url": "https://gymvisual.com/content/3-terms-and-conditions-of-use"
+      },
+      "stable_id": "rg-v1-dead-bug",
+      "name": "dead bug",
+      "source_name_zh": null,
+      "display_name_zh": "死虫式核心练习",
+      "display_name_zh_origin": "Existing Ready Gym label, not an upstream translation",
+      "instructions": {
+        "en": "Lie flat on your back with your arms extended towards the ceiling. Bend your knees and lift your legs off the ground, creating a 90-degree angle at your hips and knees. Engage your core and lower back to press your lower back into the ground. Slowly lower your right arm and left leg towards the ground, keeping them straight and hovering just above the floor. Pause for a moment, then return to the starting position. Repeat the movement with your left arm and right leg. Continue alternating sides for the desired number of repetitions.",
+        "zh": "平躺，双臂伸向天花板。 弯曲膝盖，将双腿抬离地面，使臀部和膝盖形成 90 度角。 接合你的核心和下背部，将你的下背部压入地面。 慢慢地将右臂和左腿放低至地面，保持它们伸直并悬停在地板上方。 暂停片刻，然后回到起始位置。 用左臂和右腿重复该动作。 继续交替进行所需的重复次数。"
+      },
+      "instruction_steps": {
+        "en": [
+          "Lie flat on your back with your arms extended towards the ceiling.",
+          "Bend your knees and lift your legs off the ground, creating a 90-degree angle at your hips and knees.",
+          "Engage your core and lower back to press your lower back into the ground.",
+          "Slowly lower your right arm and left leg towards the ground, keeping them straight and hovering just above the floor.",
+          "Pause for a moment, then return to the starting position.",
+          "Repeat the movement with your left arm and right leg.",
+          "Continue alternating sides for the desired number of repetitions."
+        ],
+        "zh": [
+          "平躺，双臂伸向天花板。",
+          "弯曲膝盖，将双腿抬离地面，使臀部和膝盖形成 90 度角。",
+          "接合你的核心和下背部，将你的下背部压入地面。",
+          "慢慢地将右臂和左腿放低至地面，保持它们伸直并悬停在地板上方。",
+          "暂停片刻，然后回到起始位置。",
+          "用左臂和右腿重复该动作。",
+          "继续交替进行所需的重复次数。"
+        ]
+      },
+      "equipment": "body weight",
+      "target": "abs",
+      "muscle_group": "hip flexors",
+      "secondary_muscles": [
+        "hip flexors",
+        "lower back"
+      ],
+      "source_commit": "7455efae41b330c265e7cd4b78dfa848e7ce5ebd",
+      "media_match_status": "visual_alternation_not_confirmed",
+      "visual_review_note_zh": "联系图可见仰卧腿屈伸，手臂交替和对侧配合不清楚；不声称完整交替死虫变式已视觉核实。",
+      "visual_review_scope": "five sampled GIF frames only, not safety or technique validation",
+      "local_gif_path": "source-media/current-plan/0276-iny3m5y.gif",
+      "local_image_path": "source-media/current-plan/0276-iny3m5y.jpg",
+      "media_verification": {
+        "gif_url": {
+          "git_blob_sha1": "939c5b4e7bcea2bff0dde51424df4c66fe0ab471",
+          "byte_count": 74568,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 12,
+          "distinct_frames": 10,
+          "resolution_constraint_met": true
+        },
+        "image": {
+          "git_blob_sha1": "df3343cc6c8a8e97d3adbff1f78c06944fa18bea",
+          "byte_count": 5336,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 1,
+          "distinct_frames": 1,
+          "resolution_constraint_met": true
+        }
+      },
+      "media_gap": true,
+      "text_gap": false
+    },
+    {
+      "local_id": "rg-v1-dumbbell-row",
+      "local_name_zh": "双侧俯身哑铃划船",
+      "source_id": "0293",
+      "match_status": "instruction_alignment_pending_review",
+      "note_zh": "dumbbell bent over row；英文指导双手各持哑铃、站姿俯身，无训练凳；不能用 0292 的单臂凳支撑划船替代。",
+      "source_name": "dumbbell bent over row",
+      "media_id": "BJ0Hz5L",
+      "image": "images/0293-BJ0Hz5L.jpg",
+      "gif_url": "videos/0293-BJ0Hz5L.gif",
+      "attribution": "© Gym visual — https://gymvisual.com/",
+      "runtime_enabled": false,
+      "media_policy": {
+        "licensed": true,
+        "authorization_basis": "User explicitly stated images and GIFs are authorized for Ready Gym",
+        "permission_document_reviewed": false,
+        "authorization_scope": "Ready Gym, per user declaration; no broader transferable permission asserted",
+        "bundled": false,
+        "hotlink_allowed": false,
+        "status": "user_declared_ready_gym_authorization",
+        "retain_attribution": "© Gym visual — https://gymvisual.com/",
+        "source_resolution_constraint": "180x180",
+        "terms_url": "https://gymvisual.com/content/3-terms-and-conditions-of-use"
+      },
+      "stable_id": "rg-v1-dumbbell-row",
+      "name": "dumbbell bent over row",
+      "source_name_zh": null,
+      "display_name_zh": "双侧俯身哑铃划船",
+      "display_name_zh_origin": "Existing Ready Gym label, not an upstream translation",
+      "instructions": {
+        "en": "Stand with your feet shoulder-width apart, knees slightly bent, and hold a dumbbell in each hand with your palms facing your body. Bend forward at the hips, keeping your back straight and your core engaged. Let your arms hang straight down towards the floor, with your elbows slightly bent. Pull the dumbbells up towards your chest, squeezing your shoulder blades together. Pause for a moment at the top, then slowly lower the dumbbells back down to the starting position. Repeat for the desired number of repetitions.",
+        "zh": "双脚分开与肩同宽站立，膝盖稍微弯曲，双手各握一个哑铃，手掌朝向身体。 臀部向前弯曲，保持背部挺直，核心肌群参与。 让你的手臂垂直垂向地板，肘部稍微弯曲。 将哑铃拉向胸部，将肩胛骨挤压在一起。 在顶部停顿片刻，然后慢慢将哑铃放回起始位置。 重复所需的重复次数。"
+      },
+      "instruction_steps": {
+        "en": [
+          "Stand with your feet shoulder-width apart, knees slightly bent, and hold a dumbbell in each hand with your palms facing your body.",
+          "Bend forward at the hips, keeping your back straight and your core engaged.",
+          "Let your arms hang straight down towards the floor, with your elbows slightly bent.",
+          "Pull the dumbbells up towards your chest, squeezing your shoulder blades together.",
+          "Pause for a moment at the top, then slowly lower the dumbbells back down to the starting position.",
+          "Repeat for the desired number of repetitions."
+        ],
+        "zh": [
+          "双脚分开与肩同宽站立，膝盖稍微弯曲，双手各握一个哑铃，手掌朝向身体。",
+          "臀部向前弯曲，保持背部挺直，核心肌群参与。",
+          "让你的手臂垂直垂向地板，肘部稍微弯曲。",
+          "将哑铃拉向胸部，将肩胛骨挤压在一起。",
+          "在顶部停顿片刻，然后慢慢将哑铃放回起始位置。",
+          "重复所需的重复次数。"
+        ]
+      },
+      "equipment": "dumbbell",
+      "target": "upper back",
+      "muscle_group": "biceps",
+      "secondary_muscles": [
+        "biceps",
+        "forearms"
+      ],
+      "source_commit": "7455efae41b330c265e7cd4b78dfa848e7ce5ebd",
+      "media_match_status": "visual_match",
+      "visual_review_note_zh": "联系图可见站姿双手各持哑铃同时俯身划船，未见凳子。",
+      "visual_review_scope": "five sampled GIF frames only, not safety or technique validation",
+      "local_gif_path": "source-media/current-plan/0293-BJ0Hz5L.gif",
+      "local_image_path": "source-media/current-plan/0293-BJ0Hz5L.jpg",
+      "media_verification": {
+        "gif_url": {
+          "git_blob_sha1": "669d6dfa19a081cd738e0b3a456797cd5bec069e",
+          "byte_count": 105292,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 12,
+          "distinct_frames": 10,
+          "resolution_constraint_met": true
+        },
+        "image": {
+          "git_blob_sha1": "7962648c5d4ad168f66df273b81d6bc717a42a9e",
+          "byte_count": 8508,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 1,
+          "distinct_frames": 1,
+          "resolution_constraint_met": true
+        }
+      },
+      "media_gap": false,
+      "text_gap": false
+    },
+    {
+      "local_id": "rg-v1-barbell-row",
+      "local_name_zh": "俯身杠铃划船",
+      "source_id": "0027",
+      "match_status": "instruction_alignment_pending_review",
+      "note_zh": "barbell bent over row；双手站姿俯身，不是单臂变式。",
+      "source_name": "barbell bent over row",
+      "media_id": "eZyBC3j",
+      "image": "images/0027-eZyBC3j.jpg",
+      "gif_url": "videos/0027-eZyBC3j.gif",
+      "attribution": "© Gym visual — https://gymvisual.com/",
+      "runtime_enabled": false,
+      "media_policy": {
+        "licensed": true,
+        "authorization_basis": "User explicitly stated images and GIFs are authorized for Ready Gym",
+        "permission_document_reviewed": false,
+        "authorization_scope": "Ready Gym, per user declaration; no broader transferable permission asserted",
+        "bundled": false,
+        "hotlink_allowed": false,
+        "status": "user_declared_ready_gym_authorization",
+        "retain_attribution": "© Gym visual — https://gymvisual.com/",
+        "source_resolution_constraint": "180x180",
+        "terms_url": "https://gymvisual.com/content/3-terms-and-conditions-of-use"
+      },
+      "stable_id": "rg-v1-barbell-row",
+      "name": "barbell bent over row",
+      "source_name_zh": null,
+      "display_name_zh": "俯身杠铃划船",
+      "display_name_zh_origin": "Existing Ready Gym label, not an upstream translation",
+      "instructions": {
+        "en": "Stand with your feet shoulder-width apart and knees slightly bent. Bend forward at the hips while keeping your back straight and chest up. Grasp the barbell with an overhand grip, hands slightly wider than shoulder-width apart. Pull the barbell towards your lower chest by retracting your shoulder blades and squeezing your back muscles. Pause for a moment at the top, then slowly lower the barbell back to the starting position. Repeat for the desired number of repetitions.",
+        "zh": "站立，双脚分开与肩同宽，膝盖稍微弯曲。 臀部向前弯曲，同时保持背部挺直、挺胸。 正手握住杠铃，双手间距略宽于肩宽。 通过收缩肩胛骨并挤压背部肌肉，将杠铃拉向下胸部。 在顶部停顿片刻，然后慢慢将杠铃放回起始位置。 重复所需的重复次数。"
+      },
+      "instruction_steps": {
+        "en": [
+          "Stand with your feet shoulder-width apart and knees slightly bent.",
+          "Bend forward at the hips while keeping your back straight and chest up.",
+          "Grasp the barbell with an overhand grip, hands slightly wider than shoulder-width apart.",
+          "Pull the barbell towards your lower chest by retracting your shoulder blades and squeezing your back muscles.",
+          "Pause for a moment at the top, then slowly lower the barbell back to the starting position.",
+          "Repeat for the desired number of repetitions."
+        ],
+        "zh": [
+          "站立，双脚分开与肩同宽，膝盖稍微弯曲。",
+          "臀部向前弯曲，同时保持背部挺直、挺胸。",
+          "正手握住杠铃，双手间距略宽于肩宽。",
+          "通过收缩肩胛骨并挤压背部肌肉，将杠铃拉向下胸部。",
+          "在顶部停顿片刻，然后慢慢将杠铃放回起始位置。",
+          "重复所需的重复次数。"
+        ]
+      },
+      "equipment": "barbell",
+      "target": "upper back",
+      "muscle_group": "biceps",
+      "secondary_muscles": [
+        "biceps",
+        "forearms"
+      ],
+      "source_commit": "7455efae41b330c265e7cd4b78dfa848e7ce5ebd",
+      "media_match_status": "visual_match",
+      "visual_review_note_zh": "联系图可见站姿双手握杠铃俯身划船，无额外支撑。",
+      "visual_review_scope": "five sampled GIF frames only, not safety or technique validation",
+      "local_gif_path": "source-media/current-plan/0027-eZyBC3j.gif",
+      "local_image_path": "source-media/current-plan/0027-eZyBC3j.jpg",
+      "media_verification": {
+        "gif_url": {
+          "git_blob_sha1": "b302a55e123a57cf593f79b8cd49188c91845d1c",
+          "byte_count": 100913,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 12,
+          "distinct_frames": 10,
+          "resolution_constraint_met": true
+        },
+        "image": {
+          "git_blob_sha1": "e24660b776957deb0c479173630504b677c02fe7",
+          "byte_count": 8106,
+          "dimensions": [
+            180,
+            180
+          ],
+          "frames": 1,
+          "distinct_frames": 1,
+          "resolution_constraint_met": true
+        }
+      },
+      "media_gap": false,
+      "text_gap": false
+    }
+  ]
+}

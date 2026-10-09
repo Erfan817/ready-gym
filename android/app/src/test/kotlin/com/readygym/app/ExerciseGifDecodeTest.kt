@@ -69,6 +69,21 @@ class ExerciseGifDecodeTest {
         ShadowSystemClock.advanceBy(Duration.ofMillis(440))
         assertArrayEquals(paused, frame())
     }
+    @Test @Config(sdk = [35]) fun allRepositoryGifsDecodeToRealAnimatedDrawablesAndStop() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        ExerciseMediaCatalog.all.forEach { media ->
+            val gif = decodeExerciseGif(context, requireNotNull(media.localAsset))
+            val drawable = requireNotNull(gif.drawable)
+            assertEquals(180, drawable.intrinsicWidth)
+            assertEquals(180, drawable.intrinsicHeight)
+            val view = ExerciseGifView(context)
+            view.setSource(gif)
+            view.setPlaying(true)
+            assertTrue(drawable.isRunning)
+            view.setPlaying(false)
+            assertFalse(drawable.isRunning)
+        }
+    }
     @Test @Config(sdk = [35]) fun missingFileFailsDecodeInsteadOfPretendingToLoad() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         assertTrue(runCatching { decodeExerciseGif(context, "exercise-demos/not-present.gif") }.isFailure)

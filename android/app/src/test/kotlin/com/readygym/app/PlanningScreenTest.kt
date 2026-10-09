@@ -18,6 +18,7 @@ class PlanningScreenTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
 
     private fun startPlanning() {
+        compose.onNodeWithText("离线规则模式（不使用AI）").performScrollTo().performClick()
         compose.onNodeWithContentDescription("年龄（岁）").performScrollTo().performTextInput("30")
         compose.onNodeWithContentDescription("身高（cm）").performScrollTo().performTextInput("170")
         compose.onNodeWithContentDescription("体重（kg）").performScrollTo().performTextInput("65")

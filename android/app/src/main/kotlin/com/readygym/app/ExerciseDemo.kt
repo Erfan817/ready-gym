@@ -4,6 +4,10 @@ package com.readygym.app
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import android.graphics.ImageDecoder
 import android.graphics.Movie
 import android.graphics.drawable.AnimatedImageDrawable
@@ -36,6 +40,15 @@ fun ExerciseDemo(stableId: String, modifier: Modifier = Modifier) {
 internal fun ExerciseDemo(stableId: String, modifier: Modifier, loadGif: suspend (Context, String) -> DecodedExerciseGif) {
     val media = ExerciseMediaCatalog.find(stableId)
     val context = LocalContext.current
+    val thumbnail by produceState<ImageBitmap?>(null, stableId, media?.localThumbnail) {
+        val asset = media?.localThumbnail ?: return@produceState
+        value = withContext(Dispatchers.IO) {
+            runCatching {
+                require(asset.startsWith("exercise-demos/") && !asset.contains(".."))
+                context.assets.open(asset).use { BitmapFactory.decodeStream(it)?.asImageBitmap() }
+            }.getOrNull()
+        }
+    }
     val lifecycleOwner = LocalLifecycleOwner.current
     var requested by remember(stableId) { mutableStateOf(false) }
     var decoded by remember(stableId) { mutableStateOf<DecodedExerciseGif?>(null) }
@@ -76,6 +89,10 @@ internal fun ExerciseDemo(stableId: String, modifier: Modifier, loadGif: suspend
                 Text("此动作没有已核验的演示资料，不用其他动作冒充", color = MaterialTheme.colorScheme.error)
             } else {
                 Text("主要参与：${media.muscles.joinToString("、")}", style = MaterialTheme.typography.bodyMedium)
+                if (decoded == null) thumbnail?.let { image ->
+                    Image(image, contentDescription = "${media.displayTitle}动作静态预览图（不是GIF播放）",
+                        modifier = Modifier.fillMaxWidth().aspectRatio(4f / 3f))
+                }
                 when {
                     media.status == MediaStatus.MISSING -> Text("暂无已核验GIF：${media.missingReason}", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     failed -> Text("GIF加载失败，演示不可用；请阅读动作说明，不把失败当作播放成功", color = MaterialTheme.colorScheme.error)

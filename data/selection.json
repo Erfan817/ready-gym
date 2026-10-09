@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "purpose": "Curated metadata-only sample; not the full dataset or a reviewed training plan",
+  "selected_source_ids": [
+    "3119",
+    "2398",
+    "3013",
+    "0276",
+    "0293",
+    "0027",
+    "3211",
+    "0292",
+    "0662",
+    "0025",
+    "0289",
+    "0032",
+    "0085",
+    "0043",
+    "1760",
+    "0294",
+    "0313",
+    "0334",
+    "0405",
+    "0091",
+    "0861",
+    "2330",
+    "0157",
+    "0300",
+    "1459",
+    "0336",
+    "2368",
+    "0705",
+    "1422",
+    "0534"
+  ],
+  "mappings": [
+    {
+      "local_id": "rg-v1-bodyweight-squat",
+      "local_name_zh": "徒手深蹲",
+      "source_id": "3119",
+      "match_status": "instruction_alignment_pending_review",
+      "note_zh": "上游名为 potty squat；中文名不是上游提供的名称。英文指导描述无器械双侧深蹲；仍需人工动作审核。"
+    },
+    {
+      "local_id": "rg-v1-knee-push-up",
+      "local_name_zh": "跪姿俯卧撑",
+      "source_id": "3211",
+      "match_status": "blocked_instruction_name_conflict",
+      "note_zh": "上游名 kneeling push-up (male)，但中英文指导均要求脚掌支撑、头至脚跟直线，与膝盖支撑矛盾，不可作为直接等价动作。2398 是 close-grip push-up (on knees)，仅为近似窄距变式，不自动替换。"
+    },
+    {
+      "local_id": "rg-v1-glute-bridge",
+      "local_name_zh": "徒手臀桥",
+      "source_id": "3013",
+      "match_status": "instruction_alignment_pending_review",
+      "note_zh": "low glute bridge on floor；地面双侧无负重，不使用训练凳或杠铃。"
+    },
+    {
+      "local_id": "rg-v1-dead-bug",
+      "local_name_zh": "死虫式核心练习",
+      "source_id": "0276",
+      "match_status": "instruction_alignment_pending_review",
+      "note_zh": "dead bug；仰卧交替对侧手脚，指导仅原样引用，不构成安全认证。"
+    },
+    {
+      "local_id": "rg-v1-dumbbell-row",
+      "local_name_zh": "双侧俯身哑铃划船",
+      "source_id": "0293",
+      "match_status": "instruction_alignment_pending_review",
+      "note_zh": "dumbbell bent over row；英文指导双手各持哑铃、站姿俯身，无训练凳；不能用 0292 的单臂凳支撑划船替代。"
+    },
+    {
+      "local_id": "rg-v1-barbell-row",
+      "local_name_zh": "俯身杠铃划船",
+      "source_id": "0027",
+      "match_status": "instruction_alignment_pending_review",
+      "note_zh": "barbell bent over row；双手站姿俯身，不是单臂变式。"
+    }
+  ],
+  "quality_flags": {
+    "3211": [
+      "Name says kneeling, instructions say balls of feet and head-to-heels; block equivalence until reviewed."
+    ],
+    "0292": [
+      "Single-arm bench-supported row; not equivalent to bilateral standing bent-over row."
+    ],
+    "2398": [
+      "Close-grip knee-supported push-up is a narrower-grip variation; not an exact replacement."
+    ]
+  }
+}

@@ -41,6 +41,7 @@ class SmallViewportUiTest {
     @Test
     @Config(qualifiers = "w640dp-h320dp-land")
     fun landscapeKeepsFieldsAndEquipmentScrollableAboveActionBar() {
+        compose.onNodeWithText("离线规则模式（不使用AI）").performScrollTo().performClick()
         completeConditions()
         compose.onNodeWithText("固定器械").performScrollTo().assertIsDisplayed().performClick()
         compose.onNodeWithText("下一步").assertIsDisplayed()
