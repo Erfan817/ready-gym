@@ -22,11 +22,11 @@ Kotlin + Jetpack Compose；包名 `com.readygym.app`，versionCode4，min SDK26�
 - AI路径用户同意后需要INTERNET权限访问服务端；不直接访问DeepSeek，不含模型Key。Debug仅localhost/127.0.0.1契约测试可明文，其余必须HTTPS；默认地址为空，Release地址强制空，当前不得公开部署开发API。
 - 无生产账号、训练日志、自动进阶、广告或支付；AI个性化计划provider后续工程未做。规则模板未经专业审核，不是医疗处方或安全认证。
 - 经验/器械/时长是约束；不据身高体重/BMI/性别推算负重。缺动作覆盖或未明确具体固定器械时提示缺口，不假定所有机器都有。
-- 当前不适/医学限制需明确自述；高风险反馈停止普通计划。空字段不视为安全。
+- 当前不适/医学限制需明确自述；高风险反馈停止普通计划。空字段不视为安全。Activity内保留最高身体风险，服务端结构化stop/professional路线及本地风险均优先于旧摘要；返回、离线入口、clear/restart、旋转和新无风险回答不能降低。未知/缺失/不一致安全契约保守阻断，unsupported experience不误当急性风险。这不是医疗判断，也不跨进程保存。
 
 ## 构建与测试
 
-锁定Gradle8.9 / AGP8.7.3 / Kotlin2.0.21 / Compose BOM2024.12.01，JDK17。现有SDK35、Build Tools34/35已够用；没有新增许可或常驻模拟器。低内存构建使用1worker、512MiB heap、384MiB metaspace、进程内Kotlin与no-daemon。
+锁定Gradle8.9 / AGP8.7.3 / Kotlin2.0.21 / Compose BOM2024.12.01，JDK17。现有SDK35、Build Tools34/35已够用；没有新增许可或常驻模拟器。低内存构建使用1worker、512MiB heap、512MiB metaspace、进程内Kotlin与no-daemon（早期384MiB配置有容量警告）。
 
 ```sh
 cd '/home/ubuntu/ready gym /android'
@@ -36,7 +36,7 @@ export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$PATH"
 # 可用 ./gradlew 替换已下载的Gradle入口
 "$HOME/.local/share/ready-gym-tools/gradle-8.9/bin/gradle" \
   :core:test :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest \
-  --no-daemon -Dorg.gradle.jvmargs='-Xmx512m -XX:MaxMetaspaceSize=384m' \
+  --no-daemon -Dorg.gradle.jvmargs='-Xmx512m -XX:MaxMetaspaceSize=512m' \
   -Pkotlin.compiler.execution.strategy=in-process
 python scripts/test-artwork.py
 python scripts/test-exercise-media.py
@@ -49,9 +49,11 @@ bash scripts/test-core.sh
 
 ## v0.3.0 已执行的验收
 
-**独立审查结论更新：不通过，正在修复；以下构建和hash为修复前证据，不能作为最终交付。** 必须补安全/旧摘要/删除恢复等组合回归，再全量构建和复审。最终交付同步 `Erfan817/ready-gym` 私有仓库并回读核验。
+**统一证据/安全异常边界及非法返回会话字段修正已完成精确RED→GREEN、全量实跑和限定独立复验。** 最新复验 `deleg_b7a4e3aa` 无安全或逻辑阻塞，核对8个非法会话用例、3个真实HTTP失败→Activity风险保留→离线规划阻断，以及本地请求校验对照；源码hash与实际APK一致。此前后端41项及精确待核实补验已通过。验收层级与实物见 [`../docs/verification-v0.3.0.json`](../docs/verification-v0.3.0.json)，不代表手机或真实DeepSeek验收。证据目录为`build/verification/v0.3.0/shared-boundary-fixes/`；最终GitHub推送须另行回读核验。
 
-父整合后已重新执行 `--rerun-tasks` 全量测试与主APK/设备测试APK构建：**BUILD SUCCESSFUL in 2m 8s，77个任务执行**。全量JUnit XML **97项：96通过、0失败/0错误、1明确跳过**；core39通过、App57通过/1跳过。服务端10项测试、数据导入4项测试、原创资源2项、旧Commons GIF1项、新仓库GIF/JPG文件契约1项均通过。真实回环服务启动后已核验拒绝未同意403和未配置Key503，随即关闭。模型MockTransport与测试client均明确是fixture，不是DeepSeek接通证据。独立代码审查已派发，尚未给出结论。
+父在最后生产修改后执行 `--rerun-tasks` 全量测试与主APK/设备测试APK构建：**BUILD SUCCESSFUL in 2m 23s，77个任务执行**。全量JUnit XML **130项：129通过、0失败/0错误、1明确跳过**；core39通过、App90通过/1跳过，含18项真实HTTP/Compose结构化风险、解码与返回会话字段契约测试。服务端41项、数据导入4项、原创资源2项、旧Commons GIF1项、新仓库GIF/JPG文件契约1项均通过。真实回环服务核验未同意403、未配置Key503及导出OpenAPI精确一致后关闭。上游MockTransport与测试client是fixture，不是DeepSeek接通证据。最新完整日志为`shared-boundary-fixes/full-build-session-contract.log`与实物报告`shared-boundary-fixes/session-contract-artifact.json`。
+
+此前全量运行在`ImageDecoder.nCreate`/Robolectric原生库发生过SIGSEGV并失败；原日志`full-build-after-review.log`和`app/hs_err_pid2880183.log`保留。原生GIF隔离探针及随后无过滤完整重跑通过，未忽略新增测试或更改产品代码掩盖崩溃；当时重跑日志为`full-build-after-native-probe.log`。本轮最后修改后的验收以`shared-boundary-fixes/full-build-session-contract.log`为准。
 
 RED/GREEN证据在 `build/verification/chat-tdd/`，最终整合日志与实物核验在 `build/verification/v0.3.0/`。Compose覆盖同意前0请求、busy禁用、失败保留输入/重试、Activity重建、离线旧流程、320dp/1.6倍字号与横屏scrollTo。父复验发现连续重试会产生第3次重复请求，以现有复现测试先RED再加busy guard并GREEN。仓库6 GIF均实际API35动画解码/start/stop，JPG缩略图与精确映射测试先运行时RED再GREEN。PNG是Robolectric离屏渲染，不是手机或真实AI输出；SunnyTheme和Planning.kt保持原规则。
 
@@ -78,15 +80,15 @@ GIF API35 ImageDecoder/AnimatedImageDrawable及Compose点播放/暂停/继续已
 
 无连接设备/模拟器，未执行connectedDebugAndroidTest。设备测试APK只成功编译，不等于执行设备测试。Robolectric View.draw(Canvas)图片是离屏渲染，非真机截图。
 
-## APK实物（v0.3.0 当前整合包，独立审查待结论）
+## APK实物（v0.3.0 已验证的开发测试包）
 
 - 实际主APK：`app/build/outputs/apk/debug/app-debug.apk`
 - 大小：10,062,211字节。
-- SHA-256：`66279b67f3ac3525deeff2eba6e73fdefbada99ea8cbf718e63afa7a84597f28`
+- SHA-256：`8acfb5930fbb1c56c42411563adc129045f6006e6be3763df0103edcfa01245b`
 - 包名`com.readygym.app`，versionName`0.3.0`，versionCode4；签名、ZIP完整性、zipalign4通过；全部13个媒体asset与本地来源字节一致。
 - 新增INTERNET权限仅用于用户同意后的服务端连接；默认URL为空，禁止公网明文。
 - 证书SHA-256：`078f0b793c898982522eb535c323c6b8b685221660d41fdc74e845939762add0`，与之前版本一致。不得分发私钥或设备测试APK。
-- 实物核验 `build/verification/v0.3.0/artifact.json`；ZIP仅含主APK，9,584,985字节。审查若要求改代码，必须重新构建和核验，不沿用旧hash。
+- 实物核验 `build/verification/v0.3.0/shared-boundary-fixes/session-contract-artifact.json`；ZIP仅含主APK，9,597,978字节，SHA-256 `ba4e559995b762e09d8350725ad8c3fcabe8ab0fa991cffa8eb98ca9c628ed4c`。已含统一边界及服务端会话字段分类修正，限定独立复验通过；任何后续生产代码变更都必须重新构建核验，不沿用此hash。
 
 手机可解压收到的ZIP并通过系统安装器安装主APK。USB调试及设备授权后可：
 

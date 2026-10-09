@@ -41,7 +41,7 @@ fun ReadyGymApp(client: CoachClient? = null, serviceConfigured: Boolean = BuildC
     }
     val current = profile
     when {
-        current != null -> TrainingPlanScreen(current, preferences)
+        current != null -> TrainingPlanScreen(current, preferences, coach.retainedSafety, coach::recordSafety)
         offline -> OnboardingScreen(onStartPlanning = { preferences = null; profile = it })
         else -> CoachChatScreen(coach, serviceConfigured, onOffline = { offline = true }, onConfirmed = { preferences = it.preferences; profile = it.profile })
     }
@@ -51,6 +51,14 @@ private data class ReplacementTarget(val plan: PlanDraft, val sessionId: String,
 
 private enum class DiscomfortChoice { NONE, OTHER, URGENT }
 private enum class MedicalChoice { NONE, RESTRICTIONS }
+
+internal fun SafetyRoute.localRiskPriority() = when (this) {
+    SafetyRoute.TEMPLATE_ALLOWED -> 0
+    SafetyRoute.SCREEN_REQUIRED -> 1
+    SafetyRoute.PAUSE_AND_REASSESS -> 2
+    SafetyRoute.PROFESSIONAL_REVIEW -> 3
+    SafetyRoute.STOP_AND_SEEK_CARE -> 4
+}
 
 /** Never treat untouched or blank fields as a completed, symptom-free self-report. */
 private class SafetyForm {
@@ -71,11 +79,12 @@ private class SafetyForm {
 }
 
 @Composable
-fun TrainingPlanScreen(profile: TrainingProfile, initialPreferences: PlanningPreferences? = null) {
+fun TrainingPlanScreen(profile: TrainingProfile, initialPreferences: PlanningPreferences? = null,
+    retainedSafety: SafetyFeedback? = null, onSafetyChanged: (SafetyFeedback) -> Unit = {}) {
     val engine = remember { PlanningEngine() }
     val safety = remember { SafetyForm().apply {
         // Only a validated, explicitly confirmed chat self-report may seed untouched fields.
-        initialPreferences?.safety?.takeIf { it.screenCompleted && engine.evaluateSafety(it).route == SafetyRoute.TEMPLATE_ALLOWED }?.let {
+        initialPreferences?.safety?.takeIf { retainedSafety == null && it.screenCompleted && engine.evaluateSafety(it).route == SafetyRoute.TEMPLATE_ALLOWED }?.let {
             discomfort = DiscomfortChoice.NONE; medical = MedicalChoice.NONE
         }
     } }
@@ -102,19 +111,21 @@ fun TrainingPlanScreen(profile: TrainingProfile, initialPreferences: PlanningPre
     var replacementFromName by remember { mutableStateOf("") }
     var safetyDialog by remember { mutableStateOf(false) }
     var reportForm by remember { mutableStateOf(SafetyForm()) }
-    var latestSafety by remember { mutableStateOf<SafetyFeedback?>(null) }
-    var safetyDecision by remember { mutableStateOf<SafetyDecision?>(null) }
-    // Preferences may escalate a retained report, never silently downgrade its block.
-    // A fresh explicit safety report is submitted separately through the feedback dialog.
-    val currentSafety = listOfNotNull(safety.feedback(), latestSafety).maxBy { feedback ->
-        when (engine.evaluateSafety(feedback).route) {
-            SafetyRoute.TEMPLATE_ALLOWED -> 0
-            SafetyRoute.SCREEN_REQUIRED -> 1
-            SafetyRoute.PAUSE_AND_REASSESS -> 2
-            SafetyRoute.PROFESSIONAL_REVIEW -> 3
-            SafetyRoute.STOP_AND_SEEK_CARE -> 4
+    var latestSafety by remember { mutableStateOf(retainedSafety) }
+    var safetyDecision by remember { mutableStateOf(retainedSafety?.let(engine::evaluateSafety)) }
+    fun recordSafety(feedback: SafetyFeedback) {
+        if (engine.evaluateSafety(feedback).route.localRiskPriority() >= 2 &&
+            (latestSafety == null || engine.evaluateSafety(feedback).route.localRiskPriority() >= engine.evaluateSafety(requireNotNull(latestSafety)).route.localRiskPriority())) {
+            latestSafety = feedback
+            safetyDecision = engine.evaluateSafety(feedback)
         }
+        onSafetyChanged(feedback)
     }
+    // Preferences may escalate a retained report, never silently downgrade its block.
+    // Even a fresh symptom-free report cannot erase recorded risk within this Activity session.
+    // Event callbacks must reread mutable reports, not a safe snapshot captured before recomposition.
+    fun activeSafety() = listOfNotNull(safety.feedback(), latestSafety, retainedSafety).maxBy { engine.evaluateSafety(it).route.localRiskPriority() }
+    val currentSafety = activeSafety()
     val safetyAllowed = engine.evaluateSafety(currentSafety).route == SafetyRoute.TEMPLATE_ALLOWED
     var message by remember { mutableStateOf<String?>(null) }
     val scroll = rememberScrollState()
@@ -143,8 +154,9 @@ fun TrainingPlanScreen(profile: TrainingProfile, initialPreferences: PlanningPre
                         }
                         if (experience == TrainingExperience.ADVANCED) Text("进阶模板暂不支持；不会自动改成初学。", color = MaterialTheme.colorScheme.error)
                     }
-                    PlanSection("02 / 当前安全自述") { SafetyFields(safety) }
-                    Text("资料和计划仅在本次会话有效；旋转、退出或Activity重建后会清空。不保存、不上传。", fontSize = 12.sp, lineHeight = 20.sp, color = ReadyGymColors.MutedText)
+                    PlanSection("02 / 当前安全自述") { SafetyFields(safety, ::recordSafety) }
+                    if (message == null && engine.evaluateSafety(currentSafety).route.localRiskPriority() >= 2) Text(engine.evaluateSafety(currentSafety).message, color = MaterialTheme.colorScheme.error)
+                    Text("资料和计划仅在本次页面内存；身体风险在本次Activity会话内保留，返回、旋转或重新建档不会清除。不保存、不上传。", fontSize = 12.sp, lineHeight = 20.sp, color = ReadyGymColors.MutedText)
                 } else {
                     val plan = requireNotNull(displayed)
                     Text(confirmed?.let { "当前生效 v$confirmedVersion" } ?: "尚无生效计划", fontWeight = FontWeight.Bold)
@@ -192,10 +204,12 @@ fun TrainingPlanScreen(profile: TrainingProfile, initialPreferences: PlanningPre
                 message?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 13.sp,
                     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive }) }
                 if (editing) Button(onClick = {
-                    when (val result = engine.generate(profile, PlanningPreferences(frequency, minutes, experience, currentSafety), UUID.randomUUID().toString())) {
-                        is GenerationResult.Generated -> { draft = result.draft; previousDraft = null; replacementProposal = false; nextVersion++; draftVersion = nextVersion; latestSafety = currentSafety; safetyDecision = null; editing = false; message = null }
+                    val submittedSafety = activeSafety()
+                    recordSafety(submittedSafety)
+                    when (val result = engine.generate(profile, PlanningPreferences(frequency, minutes, experience, submittedSafety), UUID.randomUUID().toString())) {
+                        is GenerationResult.Generated -> { draft = result.draft; previousDraft = null; replacementProposal = false; nextVersion++; draftVersion = nextVersion; latestSafety = submittedSafety; safetyDecision = null; editing = false; message = null }
                         is GenerationResult.Invalid -> message = result.errors.joinToString("\n") { it.message }
-                        is GenerationResult.SafetyBlocked -> { latestSafety = currentSafety; safetyDecision = result.decision; message = result.decision.message }
+                        is GenerationResult.SafetyBlocked -> { latestSafety = submittedSafety; safetyDecision = result.decision; message = result.decision.message }
                     }
                 }, enabled = safety.complete, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp), shape = RoundedCornerShape(16.dp)) {
                     Text("生成规则草稿", fontWeight = FontWeight.Bold)
@@ -205,7 +219,7 @@ fun TrainingPlanScreen(profile: TrainingProfile, initialPreferences: PlanningPre
                 if (!editing && draft != null && (confirmed != null || replacementProposal)) TextButton(onClick = { draft = previousDraft; draftVersion = previousDraftVersion; previousDraft = null; replacementProposal = false; message = null }, modifier = Modifier.fillMaxWidth()) { Text("放弃草稿") }
                 if (!editing) draft?.let { pending -> Button(onClick = {
                     when (val result = engine.confirm(pending, pending.revision, userAccepted = true,
-                        safety = currentSafety, confirmedAtEpochMillis = System.currentTimeMillis())) {
+                        safety = activeSafety(), confirmedAtEpochMillis = System.currentTimeMillis())) {
                         is ConfirmationResult.Confirmed -> { confirmed = result.plan; confirmedVersion = draftVersion; draft = null; previousDraft = null; replacementProposal = false; message = null }
                         is ConfirmationResult.Rejected -> message = result.errors.joinToString("\n") { it.message }
                         is ConfirmationResult.SafetyBlocked -> message = result.decision.message
@@ -235,7 +249,7 @@ fun TrainingPlanScreen(profile: TrainingProfile, initialPreferences: PlanningPre
                     when (val result = candidates) {
                         is ReplacementCandidatesResult.Available -> result.candidates.forEach { candidate -> TextButton(onClick = {
                             when (val proposal = engine.proposeReplacement(target.plan, target.plan.revision, target.sessionId, target.item.slotId,
-                                candidate.stableId, availableEquipment, currentSafety)) {
+                                candidate.stableId, availableEquipment, activeSafety())) {
                                 is RevisionResult.Proposed -> {
                                     // Cancel the entire unconfirmed replacement round, not just its last step.
                                     if (!replacementProposal) { previousDraft = draft; previousDraftVersion = draftVersion }
@@ -254,7 +268,7 @@ fun TrainingPlanScreen(profile: TrainingProfile, initialPreferences: PlanningPre
                         null -> Unit
                     }
                 }
-                Button(onClick = { candidates = engine.replacementCandidates(target.plan, target.sessionId, target.item.slotId, availableEquipment, currentSafety) },
+                Button(onClick = { candidates = engine.replacementCandidates(target.plan, target.sessionId, target.item.slotId, availableEquipment, activeSafety()) },
                     enabled = safetyAllowed, modifier = Modifier.fillMaxWidth()) { Text("查找替换候选") }
                 TextButton(onClick = { replacementTarget = null }, modifier = Modifier.fillMaxWidth()) { Text("取消替换") }
             }
@@ -265,10 +279,13 @@ fun TrainingPlanScreen(profile: TrainingProfile, initialPreferences: PlanningPre
             Column(Modifier.padding(16.dp).heightIn(max = 720.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("身体不适 / 安全反馈", fontWeight = FontWeight.Bold)
                 Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    SafetyFields(reportForm)
+                    SafetyFields(reportForm, ::recordSafety)
                     safetyDecision?.let { Text(it.message, color = MaterialTheme.colorScheme.error) }
                 }
-                Button(onClick = { latestSafety = reportForm.feedback(); safetyDecision = engine.evaluateSafety(reportForm.feedback()) },
+                Button(onClick = {
+                    recordSafety(reportForm.feedback())
+                    safetyDecision = engine.evaluateSafety(listOfNotNull(reportForm.feedback(), latestSafety, retainedSafety).maxBy { engine.evaluateSafety(it).route.localRiskPriority() })
+                },
                     enabled = reportForm.complete, modifier = Modifier.fillMaxWidth()) { Text("评估安全反馈") }
                 TextButton(onClick = { safetyDialog = false }, modifier = Modifier.fillMaxWidth()) { Text("关闭安全反馈") }
             }
@@ -307,22 +324,23 @@ private fun muscleLabel(muscle: MuscleGroup) = when (muscle) {
 }
 
 @Composable
-private fun SafetyFields(form: SafetyForm) {
+private fun SafetyFields(form: SafetyForm, onChanged: (SafetyFeedback) -> Unit = {}) {
+    fun change(action: () -> Unit) { action(); onChanged(form.feedback()) }
     Text("请明确选择，两项均不默认勾选。空白不是没有风险。", color = ReadyGymColors.MutedText, fontSize = 13.sp)
     Text("当前身体情况", fontWeight = FontWeight.Bold)
     Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        PlanChoice("没有当前不适或危险信号", form.discomfort == DiscomfortChoice.NONE) { form.discomfort = DiscomfortChoice.NONE }
-        PlanChoice("当前有其他不适", form.discomfort == DiscomfortChoice.OTHER) { form.discomfort = DiscomfortChoice.OTHER }
-        PlanChoice("胸痛、头晕、急性损伤或关节疼痛", form.discomfort == DiscomfortChoice.URGENT) { form.discomfort = DiscomfortChoice.URGENT }
+        PlanChoice("没有当前不适或危险信号", form.discomfort == DiscomfortChoice.NONE) { change { form.discomfort = DiscomfortChoice.NONE } }
+        PlanChoice("当前有其他不适", form.discomfort == DiscomfortChoice.OTHER) { change { form.discomfort = DiscomfortChoice.OTHER } }
+        PlanChoice("胸痛、头晕、急性损伤或关节疼痛", form.discomfort == DiscomfortChoice.URGENT) { change { form.discomfort = DiscomfortChoice.URGENT } }
     }
-    if (form.discomfort == DiscomfortChoice.OTHER) OutlinedTextField(form.description, { form.description = it },
+    if (form.discomfort == DiscomfortChoice.OTHER) OutlinedTextField(form.description, { change { form.description = it } },
         label = { Text("具体不适（可补充）") }, modifier = Modifier.fillMaxWidth().semantics { contentDescription = "具体不适" })
     Text("医学训练限制", fontWeight = FontWeight.Bold)
     Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        PlanChoice("没有医学训练限制", form.medical == MedicalChoice.NONE) { form.medical = MedicalChoice.NONE }
-        PlanChoice("有医学训练限制或尚不确定", form.medical == MedicalChoice.RESTRICTIONS) { form.medical = MedicalChoice.RESTRICTIONS }
+        PlanChoice("没有医学训练限制", form.medical == MedicalChoice.NONE) { change { form.medical = MedicalChoice.NONE } }
+        PlanChoice("有医学训练限制或尚不确定", form.medical == MedicalChoice.RESTRICTIONS) { change { form.medical = MedicalChoice.RESTRICTIONS } }
     }
-    if (form.medical == MedicalChoice.RESTRICTIONS) OutlinedTextField(form.restrictions, { form.restrictions = it },
+    if (form.medical == MedicalChoice.RESTRICTIONS) OutlinedTextField(form.restrictions, { change { form.restrictions = it } },
         label = { Text("限制说明（可补充）") }, modifier = Modifier.fillMaxWidth().semantics { contentDescription = "医学限制说明" })
 }
 

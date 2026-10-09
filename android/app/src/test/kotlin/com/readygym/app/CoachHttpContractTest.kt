@@ -69,6 +69,50 @@ internal class ScriptedLoopbackFixture(private val replies: List<Pair<Int?, Stri
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
 class CoachHttpContractTest {
+    @Test fun actual401IsRecoverableEvenWhenStreamingTransportOmitsErrorBody() = runBlocking {
+        LoopbackFixture("""{"error":{"code":"session_unauthorized"}}""", 401).use { server ->
+            try { HttpCoachClient(server.url, true).message(CoachSession("session", "token"), "unsent answer"); fail("authorization must fail") }
+            catch (e: CoachException) {
+                // JDK streaming requests can expose 401 without an error stream; retain actual status.
+                assertTrue(e.code in setOf("session_unauthorized", "http_401"))
+                assertEquals(401, e.httpStatus)
+                assertFalse(e.retryable)
+            }
+        }
+    }
+
+    @Test fun cannotAdoptReadyWhileClarificationFieldsRemain() = runBlocking {
+        val profile = """{"age":21,"height_cm":175,"weight_kg":70,"goal":"muscle","location":"gym","equipment":["dumbbell"],"days_per_week":3,"minutes_per_session":30,"experience":"beginner","current_discomfort":"none","medical_restrictions":"none"}"""
+        LoopbackFixture("""{"assistant_text":"旧资料仍完整","status":"ready","provider_mode":"deepseek_official","safety_route":null,"validated_profile":$profile,"missing_fields":[],"clarification_fields":["equipment"]}""").use { server ->
+            try { HttpCoachClient(server.url, true).message(CoachSession("session", "token"), "I no longer have dumbbells"); fail("clarification makes an old ready snapshot unusable") }
+            catch (e: CoachException) { assertEquals("invalid_response", e.code) }
+        }
+    }
+
+    @Test fun deleteLostResponseCanStillProveExactTargetGone() = runBlocking {
+        val gone = """{"error":{"code":"session_not_found"}}"""
+        // HttpURLConnection may retry a dropped DELETE transport once before reporting I/O failure.
+        ScriptedLoopbackFixture(listOf(null to "", null to "", 404 to gone)).use { server ->
+            HttpCoachClient(server.url, true).delete(CoachSession("review-target", "fixture-token"))
+            val requests = server.requests.get(6, java.util.concurrent.TimeUnit.SECONDS)
+            assertEquals(listOf("DELETE", "DELETE", "GET"), requests.map { it.substringBefore(' ') })
+            assertTrue(requests.all { it.contains(" /api/intake/sessions/review-target HTTP/1.1") })
+        }
+    }
+
+    @Test fun forged500CodeCannotProveDeletionOrClearLocalConversation() = runBlocking {
+        ScriptedLoopbackFixture(listOf(204 to "", 500 to """{"error":{"code":"session_not_found"}}""")).use { server ->
+            try {
+                HttpCoachClient(server.url, true).delete(CoachSession("review-target", "fixture-token"))
+                fail("HTTP 500 body must never be deletion proof")
+            } catch (e: CoachException) {
+                assertEquals("session_not_found", e.code)
+                assertEquals(500, e.httpStatus)
+            }
+            assertEquals(listOf("DELETE", "GET"), server.requests.get(6, java.util.concurrent.TimeUnit.SECONDS).map { it.substringBefore(' ') })
+        }
+    }
+
     @Test fun getTransientRecoveryRequiresReadbackAfterRetryDelete404() = runBlocking {
         val gone = """{"error":{"code":"session_not_found"}}"""
         ScriptedLoopbackFixture(listOf(204 to "", 503 to "{}", 404 to gone, 404 to gone)).use { server ->
@@ -84,9 +128,22 @@ class CoachHttpContractTest {
         }
     }
 
+    @Test fun missingOrUnauthorizedDeleteReadbackNeverProvesDeletion() = runBlocking {
+        for (outcome in listOf(200 to "{}", 401 to """{"error":{"code":"session_not_found"}}""", 500 to "{}", 404 to """{"error":{"code":"session_unauthorized"}}""")) {
+            ScriptedLoopbackFixture(listOf(204 to "", outcome)).use { server ->
+                try { HttpCoachClient(server.url, true).delete(CoachSession("review-target", "fixture-token")); fail("ambiguous readback must preserve local state") }
+                catch (e: CoachException) {
+                    if (outcome.first == 200) assertEquals("deletion_not_verified", e.code)
+                    else assertEquals(outcome.first, e.httpStatus)
+                }
+                assertEquals(listOf("DELETE", "GET"), server.requests.get(6, java.util.concurrent.TimeUnit.SECONDS).map { it.substringBefore(' ') })
+            }
+        }
+    }
+
     @Test fun confirmationPostsReviewedRevisionThenVerifiesExactServerSnapshot() = runBlocking {
         val profile = """{"age":21,"height_cm":175,"weight_kg":70,"goal":"muscle","location":"gym","equipment":["dumbbell"],"days_per_week":3,"minutes_per_session":30,"experience":"beginner","current_discomfort":"none","medical_restrictions":"none"}"""
-        val response = """{"session_id":"session","assistant_text":"摘要已确认","status":"ready","provider_mode":"deepseek_official","validated_profile":$profile,"missing_fields":[],"revision":3,"confirmed":true}"""
+        val response = """{"session_id":"session","assistant_text":"摘要已确认","status":"ready","provider_mode":"deepseek_official","safety_route":null,"validated_profile":$profile,"missing_fields":[],"revision":3,"confirmed":true}"""
         val socket = java.net.ServerSocket(0, 2, java.net.InetAddress.getByName("127.0.0.1"))
         val executor = java.util.concurrent.Executors.newSingleThreadExecutor()
         val actual = executor.submit<List<String>> {
@@ -153,21 +210,21 @@ class CoachHttpContractTest {
             base.replace("\"current_discomfort\":\"none\"", "\"current_discomfort\":\"胸痛\""),
             base.replace("\"medical_restrictions\":\"none\"", "\"medical_restrictions\":\"\""),
         )
-        for (profile in mutations) LoopbackFixture("""{"assistant_text":"请确认","status":"ready","provider_mode":"deepseek_official","validated_profile":$profile,"missing_fields":[]}""").use { server ->
+        for (profile in mutations) LoopbackFixture("""{"assistant_text":"请确认","status":"ready","provider_mode":"deepseek_official","safety_route":null,"validated_profile":$profile,"missing_fields":[]}""").use { server ->
             try { HttpCoachClient(server.url, true).message(CoachSession("session", "token"), "测试档案"); fail("invalid ready must fail") }
             catch (e: CoachException) { assertEquals("invalid_response", e.code) }
         }
     }
 
     @Test fun responseSessionMismatchIsRejectedBeforeSummary() = runBlocking {
-        LoopbackFixture("""{"session_id":"other-session","assistant_text":"请确认","status":"collecting","provider_mode":"deepseek_official","validated_profile":null,"missing_fields":["age"]}""").use { server ->
+        LoopbackFixture("""{"session_id":"other-session","assistant_text":"请确认","status":"collecting","provider_mode":"deepseek_official","safety_route":null,"validated_profile":null,"missing_fields":["age"]}""").use { server ->
             try { HttpCoachClient(server.url, true).message(CoachSession("session", "token"), "测试档案"); fail("session mismatch") }
             catch (e: CoachException) { assertEquals("invalid_response", e.code) }
         }
     }
 
     @Test fun neverTreatsNumericAssistantTextAsAIReply() = runBlocking {
-        LoopbackFixture("""{"assistant_text":123,"status":"collecting","provider_mode":"deepseek_official","validated_profile":null,"missing_fields":["age"]}""").use { server ->
+        LoopbackFixture("""{"assistant_text":123,"status":"collecting","provider_mode":"deepseek_official","safety_route":null,"validated_profile":null,"missing_fields":["age"]}""").use { server ->
             try { HttpCoachClient(server.url, true).message(CoachSession("session", "token"), "测试档案"); fail("numeric text") }
             catch (e: CoachException) { assertEquals("invalid_response", e.code) }
         }
@@ -175,7 +232,7 @@ class CoachHttpContractTest {
 
     @Test fun readyRequiresAllValidatedFieldsAndExplicitSafety() = runBlocking {
         val profile = """{"age":21,"height_cm":175,"weight_kg":70,"goal":"muscle","location":"gym","equipment":["dumbbell"],"days_per_week":3,"minutes_per_session":30,"experience":"beginner","current_discomfort":"none","medical_restrictions":"none"}"""
-        LoopbackFixture("""{"assistant_text":"请确认摘要","status":"ready","provider_mode":"deepseek_official","validated_profile":$profile,"missing_fields":[]}""").use { server ->
+        LoopbackFixture("""{"assistant_text":"请确认摘要","status":"ready","provider_mode":"deepseek_official","safety_route":null,"validated_profile":$profile,"missing_fields":[]}""").use { server ->
             val candidate = HttpCoachClient(server.url, debug = true).message(CoachSession("session", "token"), "没有医学训练限制").confirmedCandidate
             assertNotNull(candidate)
             assertEquals(21, candidate!!.profile.age)
@@ -186,14 +243,14 @@ class CoachHttpContractTest {
 
     @Test fun forgedReadyCannotDefaultNullSafetyToHealthy() = runBlocking {
         val profile = """{"age":21,"height_cm":175,"weight_kg":70,"goal":"muscle","location":"gym","equipment":["dumbbell"],"days_per_week":3,"minutes_per_session":30,"experience":"beginner","current_discomfort":null,"medical_restrictions":null}"""
-        LoopbackFixture("""{"assistant_text":"已安全可训练","status":"ready","provider_mode":"deepseek_official","validated_profile":$profile,"missing_fields":[]}""").use { server ->
+        LoopbackFixture("""{"assistant_text":"已安全可训练","status":"ready","provider_mode":"deepseek_official","safety_route":null,"validated_profile":$profile,"missing_fields":[]}""").use { server ->
             try { HttpCoachClient(server.url, debug = true).message(CoachSession("session", "token"), "你好"); fail("must reject null safety") }
             catch (e: CoachException) { assertEquals("invalid_response", e.code) }
         }
     }
 
     @Test fun messagesUseSessionBearerAndPreserveNaturalLanguage() = runBlocking {
-        LoopbackFixture("""{"assistant_text":"还需要你的当前安全自述。","status":"collecting","provider_mode":"deepseek_official","validated_profile":null,"missing_fields":["safety"]}""").use { server ->
+        LoopbackFixture("""{"assistant_text":"还需要你的当前安全自述。","status":"collecting","provider_mode":"deepseek_official","safety_route":null,"validated_profile":null,"missing_fields":["safety"]}""").use { server ->
             val reply = HttpCoachClient(server.url, debug = true).message(CoachSession("test-session", "test-token"), "21岁，想增肌")
             val request = server.request.get()
             assertTrue(request.startsWith("POST /api/intake/sessions/test-session/messages HTTP/1.1"))
@@ -240,7 +297,7 @@ class CoachHttpContractTest {
     }
 
     @Test fun startPostsExplicitConsentAndUsesServerFirstQuestion() = runBlocking {
-        LoopbackFixture("""{"session_id":"test-session","session_token":"test-token","assistant_text":"服务端AI首问：你希望实现什么目标？","status":"collecting","provider_mode":"deepseek_official","validated_profile":null,"missing_fields":["age"]}""").use { server ->
+        LoopbackFixture("""{"session_id":"test-session","session_token":"test-token","assistant_text":"服务端AI首问：你希望实现什么目标？","status":"collecting","provider_mode":"deepseek_official","safety_route":null,"validated_profile":null,"missing_fields":["age"]}""").use { server ->
             val reply = HttpCoachClient(server.url, debug = true).start()
             val request = server.request.get()
             assertTrue(request.startsWith("POST /api/intake/sessions HTTP/1.1"))

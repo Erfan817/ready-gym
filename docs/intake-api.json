@@ -999,6 +999,28 @@
             "type": "array",
             "title": "Missing Fields"
           },
+          "clarification_fields": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "age",
+                "height_cm",
+                "weight_kg",
+                "gender",
+                "goal",
+                "location",
+                "equipment",
+                "days_per_week",
+                "minutes_per_session",
+                "experience",
+                "current_discomfort",
+                "medical_restrictions"
+              ]
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Clarification Fields"
+          },
           "status": {
             "type": "string",
             "enum": [
@@ -1062,6 +1084,7 @@
           "profile",
           "validated_profile",
           "missing_fields",
+          "clarification_fields",
           "status",
           "provider_mode",
           "response_source",
@@ -1126,6 +1149,28 @@
             },
             "type": "array",
             "title": "Missing Fields"
+          },
+          "clarification_fields": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "age",
+                "height_cm",
+                "weight_kg",
+                "gender",
+                "goal",
+                "location",
+                "equipment",
+                "days_per_week",
+                "minutes_per_session",
+                "experience",
+                "current_discomfort",
+                "medical_restrictions"
+              ]
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Clarification Fields"
           },
           "status": {
             "type": "string",
@@ -1194,6 +1239,7 @@
           "profile",
           "validated_profile",
           "missing_fields",
+          "clarification_fields",
           "status",
           "provider_mode",
           "response_source",

@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import com.readygym.core.*
 import java.io.IOException
 import kotlinx.coroutines.*
 
@@ -25,6 +26,23 @@ data class CoachBubble(val user: Boolean, val text: String, val source: String? 
 /** Memory only; ViewModel retains this conversation over rotation, not process death. */
 class CoachConversation(private val client: CoachClient) : ViewModel() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val safetyEngine = PlanningEngine()
+    var retainedSafety by mutableStateOf<SafetyFeedback?>(null)
+        private set
+    val localSafetyBlocked: Boolean get() = retainedSafety != null
+    val localSafetyMessage: String? get() = retainedSafety?.let {
+        "本次会话已记录身体风险，旧摘要已失效；不能采用普通规则计划。${safetyEngine.evaluateSafety(it).message}返回、重新建档或无风险填写不会清除本次风险。"
+    }
+    fun recordSafety(feedback: SafetyFeedback) {
+        val priority = safetyEngine.evaluateSafety(feedback).route.localRiskPriority()
+        if (priority < 2) return
+        if (retainedSafety == null || priority >= safetyEngine.evaluateSafety(requireNotNull(retainedSafety)).route.localRiskPriority()) {
+            retainedSafety = feedback
+        }
+    }
+    private fun recordServerSafety(reply: CoachReply) {
+        reply.safetyRoute?.localFeedback()?.let(::recordSafety)
+    }
     var input by mutableStateOf("")
         private set
     var busy by mutableStateOf(false)
@@ -54,15 +72,18 @@ class CoachConversation(private val client: CoachClient) : ViewModel() {
     }
     fun confirm(onConfirmed: (CoachCandidate) -> Unit) {
         val reviewed = reply ?: return
-        if (busy || input.isNotBlank() || reviewed.confirmedCandidate == null) return
+        recordServerSafety(reviewed)
+        if (busy || localSafetyBlocked || input.isNotBlank() || reviewed.status != "ready" || reviewed.safetyRoute != null || reviewed.confirmedCandidate == null) return
         busy = true; error = null; retryAction = { confirm(onConfirmed) }
         scope.launch {
             try {
                 val accepted = client.confirm(reviewed)
+                recordServerSafety(accepted)
+                if (localSafetyBlocked) throw CoachException("local_safety_block")
                 if (accepted.status != "ready" || accepted.confirmedCandidate != reviewed.confirmedCandidate) throw CoachException("invalid_response")
                 reply = accepted; retryAction = null
                 onConfirmed(requireNotNull(accepted.confirmedCandidate))
-            } catch (e: CoachException) { error = e }
+            } catch (e: CoachException) { e.safetyFeedback?.let(::recordSafety); error = e }
             catch (_: IOException) { error = CoachException("network_error", true) }
             finally { busy = false }
         }
@@ -75,7 +96,7 @@ class CoachConversation(private val client: CoachClient) : ViewModel() {
             try {
                 client.delete(current)
                 session = null; reply = null; messages = emptyList(); input = ""; correction = false; retryAction = null
-            } catch (e: CoachException) { error = e }
+            } catch (e: CoachException) { e.safetyFeedback?.let(::recordSafety); error = e }
             catch (_: IOException) { error = CoachException("network_error", true) }
             finally { busy = false }
         }
@@ -91,11 +112,12 @@ class CoachConversation(private val client: CoachClient) : ViewModel() {
         scope.launch {
             try {
                 val result = if (text == null) client.start() else client.message(requireNotNull(session), text)
+                recordServerSafety(result)
                 session = result.session
                 if (text != null) { messages = messages + CoachBubble(true, text); input = "" }
                 messages = messages + CoachBubble(false, result.assistantText, result.responseSource)
                 reply = result; correction = false; retryAction = null
-            } catch (e: CoachException) { error = e }
+            } catch (e: CoachException) { e.safetyFeedback?.let(::recordSafety); error = e }
             catch (_: IOException) { error = CoachException("network_error", true) }
             finally { busy = false }
         }
@@ -141,7 +163,13 @@ fun CoachChatScreen(coach: CoachConversation, serviceConfigured: Boolean, onOffl
                         Text(text, lineHeight = 24.sp)
                     }
                 }
-                if (coach.reply?.status == "blocked") Text("当前资料不适合普通规则计划。请停止训练并按服务端提示寻求专业评估；可继续说明或纠正资料。", color = MaterialTheme.colorScheme.error)
+                if (coach.reply?.status == "blocked") Text(when (coach.reply?.safetyRoute) {
+                    CoachSafetyRoute.STOP_AND_SEEK_CARE -> "服务端安全路线：停止训练并及时寻求医疗评估，不作诊断。"
+                    CoachSafetyRoute.PROFESSIONAL_REVIEW -> "服务端安全路线：暂停普通训练并寻求专业评估，不作诊断。"
+                    CoachSafetyRoute.UNSUPPORTED_EXPERIENCE -> "当前训练经验暂不支持规则模板；这不代表急性身体风险。"
+                    null -> "服务端安全路线无法核实，不能采用普通规则计划。"
+                }, color = MaterialTheme.colorScheme.error)
+                coach.localSafetyMessage?.let { Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive }) }
                 if (coach.correction) Text("直接告诉教练哪里不对，例如“我是在家训练”。修改后会重新整理摘要。", color = ReadyGymColors.MutedText)
                 coach.reply?.confirmedCandidate?.let { candidate ->
                     Card(colors = CardDefaults.cardColors(containerColor = ReadyGymColors.AccentSurface)) {
@@ -151,9 +179,9 @@ fun CoachChatScreen(coach: CoachConversation, serviceConfigured: Boolean, onOffl
                             Text("年龄：${p.age}岁 · 身高：${p.heightCm} cm · 体重：${p.weightKg} kg\n性别：${p.gender.label}")
                             Text("目标：${p.goal.label} · 地点：${p.location.label}\n器械：${p.equipment.joinToString("、") { it.label }}")
                             Text("每周${pref.daysPerWeek}天 · 每次${pref.minutesPerSession}分钟 · ${if (pref.experience == com.readygym.core.TrainingExperience.BEGINNER) "初学" else "恢复训练"}")
-                            Text("你明确自述：没有当前不适、没有医学训练限制。不是安全认证。", fontSize = 13.sp)
+                            Text(if (coach.localSafetyBlocked) "旧摘要已失效：较新的身体风险优先，不能以旧的无不适自述继续。" else "你明确自述：没有当前不适、没有医学训练限制。不是安全认证。", fontSize = 13.sp)
                             Text("下一步是未经专业审核的规则计划底座，不是AI生成计划。", fontSize = 13.sp, color = ReadyGymColors.MutedText)
-                            Button(onClick = { coach.confirm(onConfirmed) }, enabled = !coach.busy && coach.input.isBlank(), modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)) { Text("确认资料，进入规则计划") }
+                            Button(onClick = { coach.confirm(onConfirmed) }, enabled = !coach.busy && !coach.localSafetyBlocked && coach.input.isBlank(), modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)) { Text("确认资料，进入规则计划") }
                             TextButton(onClick = { coach.correct() }, enabled = !coach.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("这些信息不对") }
                         }
                     }
@@ -164,9 +192,9 @@ fun CoachChatScreen(coach: CoachConversation, serviceConfigured: Boolean, onOffl
             }
             Column(Modifier.fillMaxWidth().padding(horizontal = 22.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 coach.error?.let { error ->
-                    Text(coachErrorText(error.code), color = MaterialTheme.colorScheme.error, fontSize = 13.sp, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive })
+                    Text(if (error.httpStatus == 401 || error.code == "session_unauthorized") "会话授权已失效，请重新开始并再次明确同意；本次输入仍保留。" else coachErrorText(error.code), color = MaterialTheme.colorScheme.error, fontSize = 13.sp, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive })
                     if (error.retryable) TextButton(onClick = { coach.retry() }, enabled = !coach.busy, modifier = Modifier.heightIn(min = 48.dp)) { Text("重试") }
-                    if (error.code in setOf("session_expired", "session_not_found", "invalid_session_token", "http_401", "http_404", "http_410")) TextButton(onClick = { coach.restart() }, enabled = !coach.busy, modifier = Modifier.heightIn(min = 48.dp)) { Text("重新开始会话") }
+                    if (error.httpStatus == 401 || error.code in setOf("session_expired", "session_not_found", "session_unauthorized", "invalid_session_token", "http_401", "http_404", "http_410")) TextButton(onClick = { coach.restart() }, enabled = !coach.busy, modifier = Modifier.heightIn(min = 48.dp)) { Text("重新开始会话") }
                 }
                 if (coach.busy) Text("正在等待服务端…", fontSize = 13.sp, color = ReadyGymColors.MutedText, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                 OutlinedTextField(coach.input, { coach.edit(it) }, enabled = coach.session != null && !coach.busy, label = { Text("告诉教练（最多1000字）") },
@@ -186,5 +214,6 @@ private fun coachErrorText(code: String) = when (code) {
     "invalid_input" -> "请填写1–1000字，输入未丢失。"
     "invalid_response", "response_too_large", "unexpected_redirect" -> "服务端响应不符合契约，不能采用资料；输入已保留。"
     "session_expired", "session_not_found", "invalid_session_token", "http_401", "http_404", "http_410" -> "会话已失效，请重新开始；本次输入仍保留。"
+    "network_error", "provider_timeout", "http_408", "http_504" -> "未能确认AI请求结果，输入已保留；可能已计费，重试会再次发起请求。仅在你点击重试后发送。"
     else -> "暂时无法取得AI回复，输入已保留；可重试。"
 }

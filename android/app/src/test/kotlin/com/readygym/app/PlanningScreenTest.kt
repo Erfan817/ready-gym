@@ -106,6 +106,20 @@ class PlanningScreenTest {
         compose.onNodeWithText("主肌群：股四头肌", substring = true).assertExists()
     }
 
+    @Test fun sameFrameUrgentFeedbackCannotUseEarlierSafePlanConfirmationCallback() {
+        generateDraft()
+        val confirm = compose.onNodeWithText("确认采用 v1").fetchSemanticsNode()
+            .config[androidx.compose.ui.semantics.SemanticsActions.OnClick].action!!
+        compose.onNodeWithText("身体不适").performClick()
+        val urgent = compose.onNodeWithText("胸痛、头晕、急性损伤或关节疼痛").fetchSemanticsNode()
+            .config[androidx.compose.ui.semantics.SemanticsActions.OnClick].action!!
+        val close = compose.onNodeWithText("关闭安全反馈").fetchSemanticsNode()
+            .config[androidx.compose.ui.semantics.SemanticsActions.OnClick].action!!
+        compose.runOnUiThread { urgent(); confirm(); close() }
+        compose.onNodeWithText("当前生效 v1").assertDoesNotExist()
+        compose.onNodeWithText("确认采用 v1").assertIsNotEnabled()
+    }
+
     @Test fun reportedDangerBlocksConfirmationAndEquipmentReplacement() {
         generateDraft()
         compose.onNodeWithText("身体不适").performClick()

@@ -11,13 +11,30 @@ import org.json.JSONException
 import org.json.JSONObject
 
 /** No credentials, default public endpoint, body logs or local pretend responder. */
-class CoachException(val code: String, val retryable: Boolean = false) : IOException(code)
+class CoachException(val code: String, val retryable: Boolean = false, val httpStatus: Int? = null,
+    val safetyFeedback: SafetyFeedback? = null) : IOException(code)
 data class CoachSession(val id: String, val token: String) {
     override fun toString() = "CoachSession(<redacted>)"
 }
 data class CoachReply(val session: CoachSession, val assistantText: String, val status: String,
     val confirmedCandidate: CoachCandidate? = null, val revision: Int? = null, val confirmed: Boolean = false,
-    val responseSource: String? = null)
+    val responseSource: String? = null, val safetyRoute: CoachSafetyRoute? = null)
+
+/** Bounded server policy, not a diagnosis or an inference from assistant prose. */
+enum class CoachSafetyRoute(val wireValue: String) {
+    STOP_AND_SEEK_CARE("stop_and_seek_care"),
+    PROFESSIONAL_REVIEW("professional_review"),
+    UNSUPPORTED_EXPERIENCE("unsupported_experience");
+
+    fun localFeedback(): SafetyFeedback? = when (this) {
+        // Core's conservative STOP guard recognizes this policy label. It does not assert a symptom.
+        STOP_AND_SEEK_CARE -> SafetyFeedback(screenCompleted = true,
+            currentDiscomfort = "服务端安全路线 stop_and_seek_care：停止训练并及时就医；胸痛等危险信号处置路线，不代表症状诊断")
+        PROFESSIONAL_REVIEW -> SafetyFeedback(screenCompleted = true,
+            medicalRestrictions = "服务端安全路线 professional_review：普通训练前需要专业评估，不作诊断")
+        UNSUPPORTED_EXPERIENCE -> null
+    }
+}
 data class CoachCandidate(val profile: TrainingProfile, val preferences: PlanningPreferences)
 interface CoachClient {
     suspend fun confirm(reply: CoachReply): CoachReply = throw CoachException("confirmation_not_supported")
@@ -25,25 +42,45 @@ interface CoachClient {
     suspend fun start(): CoachReply
     suspend fun message(session: CoachSession, text: String): CoachReply
 }
+private fun unverifiedCoachSafety() = SafetyFeedback(screenCompleted = true,
+    medicalRestrictions = "服务端安全契约无法核实：暂停普通训练并寻求专业评估，不作诊断")
+
 class HttpCoachClient(private val baseUrl: String = "", private val debug: Boolean = false) : CoachClient {
-    override suspend fun start(): CoachReply = parseReply(exchange("POST", "/api/intake/sessions", JSONObject().put("consent", true), null), null)
-    override suspend fun message(session: CoachSession, text: String): CoachReply {
-        if (text.isBlank() || text.length > 1000) throw CoachException("invalid_input")
-        return parseReply(exchange("POST", path(session) + "/messages", JSONObject().put("message", text), session), session)
+    /** One boundary for transport decoding, structured parsing and confirmation readback. */
+    private suspend fun checkedIntakeResponse(block: suspend () -> CoachReply): CoachReply = try {
+        block()
+    } catch (e: CoachException) {
+        if (e.code in setOf("invalid_response", "response_too_large", "unexpected_redirect")) {
+            throw CoachException(e.code, e.retryable, e.httpStatus, e.safetyFeedback ?: unverifiedCoachSafety())
+        }
+        throw e
     }
-    override suspend fun confirm(reply: CoachReply): CoachReply {
-        if (reply.status != "ready" || reply.confirmedCandidate == null || reply.revision == null) throw CoachException("invalid_response")
+    override suspend fun start(): CoachReply = checkedIntakeResponse {
+        parseReply(exchange("POST", "/api/intake/sessions", JSONObject().put("consent", true), null), null)
+    }
+    override suspend fun message(session: CoachSession, text: String): CoachReply = checkedIntakeResponse {
+        if (text.isBlank() || text.length > 1000) throw CoachException("invalid_input")
+        parseReply(exchange("POST", path(session) + "/messages", JSONObject().put("message", text), session), session)
+    }
+    override suspend fun confirm(reply: CoachReply): CoachReply = checkedIntakeResponse {
+        if (reply.status != "ready" || reply.safetyRoute != null || reply.confirmedCandidate == null || reply.revision == null) throw CoachException("invalid_response", safetyFeedback = reply.safetyRoute?.localFeedback())
         val posted = parseReply(exchange("POST", path(reply.session) + "/confirm",
             JSONObject().put("confirmed", true).put("expected_revision", reply.revision), reply.session), reply.session)
+        posted.safetyRoute?.let { throw CoachException("invalid_response", safetyFeedback = it.localFeedback()) }
         if (!posted.confirmed || posted.revision != reply.revision || posted.confirmedCandidate != reply.confirmedCandidate) throw CoachException("invalid_response")
         val verified = parseReply(exchange("GET", path(reply.session), null, reply.session), reply.session)
+        verified.safetyRoute?.let { throw CoachException("invalid_response", safetyFeedback = it.localFeedback()) }
         if (!verified.confirmed || verified.revision != reply.revision || verified.confirmedCandidate != reply.confirmedCandidate) throw CoachException("invalid_response")
-        return verified
+        verified
     }
     override suspend fun delete(session: CoachSession) {
-        exchange("DELETE", path(session), null, session)
+        try { exchange("DELETE", path(session), null, session) }
+        catch (e: CoachException) {
+            // A lost response or earlier deletion needs exact GET proof, never another model call.
+            if (e.code != "network_error" && (e.httpStatus != 404 || e.code !in setOf("session_not_found", "http_404"))) throw e
+        }
         try { exchange("GET", path(session), null, session); throw CoachException("deletion_not_verified", true) }
-        catch (e: CoachException) { if (e.code != "session_not_found" && e.code != "http_404") throw e }
+        catch (e: CoachException) { if (e.httpStatus != 404 || e.code !in setOf("session_not_found", "http_404")) throw e }
     }
     private fun path(session: CoachSession): String {
         if (!session.id.matches(Regex("[A-Za-z0-9_-]{1,128}")) || !session.token.matches(Regex("[A-Za-z0-9_-]{1,256}"))) throw CoachException("invalid_session")
@@ -74,22 +111,38 @@ class HttpCoachClient(private val baseUrl: String = "", private val debug: Boole
             PlanningPreferences(days, minutes, choice("experience", mapOf("beginner" to TrainingExperience.BEGINNER, "returning" to TrainingExperience.RETURNING)), SafetyFeedback(screenCompleted = true)))
     }
     private fun parseReply(json: JSONObject, session: CoachSession?): CoachReply {
+        // Even a malformed 2xx response cannot turn an unverified safety policy into "none".
+        var safetyOnFailure = unverifiedCoachSafety()
         try {
             fun string(name: String): String = json.get(name) as? String ?: throw CoachException("invalid_response")
+            if (!json.has("safety_route")) throw CoachException("invalid_response")
+            val route = if (json.isNull("safety_route")) null else {
+                val value = string("safety_route")
+                CoachSafetyRoute.entries.firstOrNull { it.wireValue == value } ?: throw CoachException("invalid_response")
+            }
+            route?.localFeedback()?.let { safetyOnFailure = it }
             val current = session ?: CoachSession(string("session_id"), string("session_token"))
             path(current)
             if (session != null && json.has("session_id") && string("session_id") != session.id) throw CoachException("invalid_response")
             val text = string("assistant_text"); val status = string("status")
             if (text.isBlank() || text.length > 8000 || status !in setOf("collecting", "ready", "blocked") || string("provider_mode") != "deepseek_official") throw CoachException("invalid_response")
+            if ((status == "blocked") != (route != null)) throw CoachException("invalid_response")
             val candidate = if (status == "ready") {
-                if (session == null || json.getJSONArray("missing_fields").length() != 0) throw CoachException("invalid_response")
+                if (session == null || json.getJSONArray("missing_fields").length() != 0 ||
+                    (json.has("clarification_fields") && json.getJSONArray("clarification_fields").length() != 0)) throw CoachException("invalid_response")
                 parseCandidate(json.getJSONObject("validated_profile"))
             } else null
             val revision = if (!json.has("revision")) null else (json.get("revision") as? Number)?.toDouble()?.takeIf { it >= 0 && it == it.toInt().toDouble() }?.toInt() ?: throw CoachException("invalid_response")
             val confirmed = if (!json.has("confirmed")) false else json.get("confirmed") as? Boolean ?: throw CoachException("invalid_response")
             val source = if (!json.has("response_source")) null else string("response_source")
-            return CoachReply(current, text, status, candidate, revision, confirmed, source)
-        } catch (_: JSONException) { throw CoachException("invalid_response") }
+            return CoachReply(current, text, status, candidate, revision, confirmed, source, route)
+        } catch (_: JSONException) { throw CoachException("invalid_response", safetyFeedback = safetyOnFailure) }
+        catch (e: CoachException) {
+            // Every value validated inside this parser came from the response.
+            // Local request/session validation stays outside this boundary.
+            throw CoachException("invalid_response", httpStatus = e.httpStatus,
+                safetyFeedback = e.safetyFeedback ?: safetyOnFailure)
+        }
     }
     private suspend fun exchange(method: String, path: String, body: JSONObject?, session: CoachSession?): JSONObject = withContext(Dispatchers.IO) {
         if (baseUrl.isBlank()) throw CoachException("api_config_not_set")
@@ -128,7 +181,7 @@ class HttpCoachClient(private val baseUrl: String = "", private val debug: Boole
                 val error = try { JSONObject(output.toString("UTF-8")) } catch (_: JSONException) { null }
                 val code = error?.optJSONObject("error")?.optString("code") ?: error?.optJSONObject("detail")?.optString("code")
                 val known = setOf("provider_not_configured", "session_expired", "session_not_found", "session_unauthorized", "invalid_session_token", "rate_limit_exceeded", "provider_timeout", "provider_error", "session_busy", "stale_revision", "profile_not_ready", "provider_invalid_response", "provider_unavailable", "provider_auth_failed", "provider_rate_limited", "session_call_limit", "session_token_limit", "app_call_limit", "session_capacity", "provider_busy")
-                throw CoachException(if (code in known) code!! else "http_$status", status in listOf(408, 429, 500, 502, 503, 504) && code != "provider_not_configured")
+                throw CoachException(if (code in known) code!! else "http_$status", status in listOf(408, 429, 500, 502, 503, 504) && code != "provider_not_configured", status)
             }
             if (status == 204) JSONObject() else JSONObject(output.toString("UTF-8"))
         } catch (e: CoachException) { throw e }

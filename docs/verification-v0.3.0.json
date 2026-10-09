@@ -1,0 +1,77 @@
+{
+  "version": "0.3.0",
+  "version_code": 4,
+  "status": "development_slice_verified",
+  "scope": "conversation-first intake client/service, deterministic offline plans, six repository GIFs and thumbnails, reviewed safety and response-contract fixes",
+  "tests": {
+    "android_junit": {"tests": 130, "passed": 129, "failures": 0, "errors": 0, "skipped": 1},
+    "backend_unittest": {"methods": 41, "passed": 41, "failures": 0, "errors": 0, "skipped": 0, "upstream": "labelled httpx.MockTransport, not live DeepSeek"},
+    "data_import": {"passed": 4},
+    "artwork": {"passed": 2},
+    "commons_media_contract": {"passed": 1},
+    "repository_media_contract": {"passed": 1},
+    "gradle_tasks_executed": 77,
+    "android_legacy_movie_probe": "explicitly skipped; real Android26/27 still unverified"
+  },
+  "independent_reviews": {
+    "backend_latest_verification": "deleg_3476b474: 41 tests and three exact qualifier ASGI probes passed, source unchanged",
+    "android_final_verification": "deleg_b7a4e3aa: targeted final fix passed, security_concerns and logic_errors empty; read-only source/bytecode/test-report verification",
+    "professional_or_medical_certification": false
+  },
+  "reviewed_source_sha256": {
+    "agent-python/ready_gym_intake.py": "e2b45874d10b555b3ca603015f99659e22918fa6182cfca1a8232aa9618702db",
+    "android/app/src/main/kotlin/com/readygym/app/CoachClient.kt": "9600765013b9a36346e004df6090de6fc97bbb0d6c7316aa250a3d26349d2a56",
+    "android/app/src/main/kotlin/com/readygym/app/CoachChatScreen.kt": "424ff0cfd71d8f0e9ed714f87b62279594f02e76e1661a273405bed782347e25",
+    "android/app/src/main/kotlin/com/readygym/app/TrainingPlanScreen.kt": "8597330f60a0c8b6c5354853c9f04ab77c40f5a9b128cb70cc72ddc5cd5abacb",
+    "android/app/src/test/kotlin/com/readygym/app/CoachStructuredSafetyTest.kt": "e686327d1c2ae8e840171f681e60250769c7124d0f306fd7f306320652612a20"
+  },
+  "apk": {
+    "name": "ready-gym-v0.3.0-debug.apk",
+    "package": "com.readygym.app",
+    "bytes": 10062211,
+    "sha256": "8acfb5930fbb1c56c42411563adc129045f6006e6be3763df0103edcfa01245b",
+    "certificate_sha256": "078f0b793c898982522eb535c323c6b8b685221660d41fdc74e845939762add0",
+    "signature": "verified",
+    "zip_integrity": "verified",
+    "zipalign": "verified",
+    "service_base_url": "",
+    "is_store_release": false
+  },
+  "delivery_zip": {
+    "name": "ready-gym-v0.3.0-android.zip",
+    "contains_only": "ready-gym-v0.3.0-debug.apk",
+    "bytes": 9597978,
+    "sha256": "ba4e559995b762e09d8350725ad8c3fcabe8ab0fa991cffa8eb98ca9c628ed4c",
+    "contents_match_verified_apk": true
+  },
+  "media": {
+    "upstream_revision": "7455efae41b330c265e7cd4b78dfa848e7ce5ebd",
+    "metadata_count": 1324,
+    "exported_catalog_count": 30,
+    "media_reference_count": 1324,
+    "mapped_repository_gifs": 6,
+    "mapped_thumbnails": 6,
+    "original_dimensions": [180, 180],
+    "original_media_bytes_verified": true,
+    "authorization": "user-declared Ready Gym usage authorization; retained Gym visual attribution, no reviewed permission document asserted"
+  },
+  "evidence": {
+    "full_build_log": "android/build/verification/v0.3.0/shared-boundary-fixes/full-build-session-contract.log",
+    "artifact_report": "android/build/verification/v0.3.0/shared-boundary-fixes/session-contract-artifact.json",
+    "backend_runtime_red_green": "android/build/verification/v0.3.0/shared-boundary-fixes/backend-RED.log and backend-GREEN.log",
+    "android_runtime_red_green": "android/build/verification/v0.3.0/shared-boundary-fixes/android-runtime-RED.log, android-final-GREEN.log, session-response-runtime-RED.log, session-response-GREEN.log",
+    "evidence_and_build_outputs_gitignored": true,
+    "loopback_consent_http_status": 403,
+    "loopback_unconfigured_provider_http_status": 503,
+    "live_loopback_openapi_matches_export": true,
+    "temporary_loopback_server_stopped": true
+  },
+  "unverified_or_unimplemented": [
+    "Dedicated Ready Gym DeepSeek key and a limited real-provider request",
+    "Production HTTPS and user access control deployment",
+    "Real AI-generated personalised plans",
+    "Real-device Android26/27 GIF, IME, TalkBack and OEM acceptance",
+    "Persistent accounts, training history and automatic progression",
+    "Professional exercise and medical review"
+  ]
+}
