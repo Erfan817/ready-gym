@@ -41,9 +41,49 @@ internal class LoopbackFixture(private val response: String, private val code: I
     override fun close() { socket.close(); executor.shutdownNow() }
 }
 
+/** Scripted real HTTP outcomes; a null status drops the response. */
+internal class ScriptedLoopbackFixture(private val replies: List<Pair<Int?, String>>) : AutoCloseable {
+    private val socket = ServerSocket(0, replies.size, InetAddress.getByName("127.0.0.1")).apply { soTimeout = 5000 }
+    private val executor = Executors.newSingleThreadExecutor()
+    val url = "http://127.0.0.1:${socket.localPort}"
+    val requests: Future<List<String>> = executor.submit<List<String>> {
+        replies.map { (status, response) -> socket.accept().use { client ->
+            client.soTimeout = 5000
+            val input = client.getInputStream().bufferedReader()
+            val headers = buildList { while (true) { val line = input.readLine() ?: break; if (line.isEmpty()) break; add(line) } }
+            val length = headers.firstOrNull { it.startsWith("Content-Length:", true) }?.substringAfter(':')?.trim()?.toInt() ?: 0
+            repeat(length) { input.read() }
+            if (status != null) {
+                val bytes = response.toByteArray(Charsets.UTF_8)
+                client.getOutputStream().apply {
+                    write("HTTP/1.1 $status Fixture\r\nContent-Type: application/json\r\nContent-Length: ${bytes.size}\r\nConnection: close\r\n\r\n".toByteArray())
+                    write(bytes); flush()
+                }
+            }
+            headers.joinToString("\n")
+        } }
+    }
+    override fun close() { socket.close(); executor.shutdownNow() }
+}
+
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
 class CoachHttpContractTest {
+    @Test fun getTransientRecoveryRequiresReadbackAfterRetryDelete404() = runBlocking {
+        val gone = """{"error":{"code":"session_not_found"}}"""
+        ScriptedLoopbackFixture(listOf(204 to "", 503 to "{}", 404 to gone, 404 to gone)).use { server ->
+            val client = HttpCoachClient(server.url, true)
+            val session = CoachSession("review-target", "fixture-token")
+            try { client.delete(session); fail("transient readback must not prove deletion") }
+            catch (e: CoachException) { assertEquals("http_503", e.code) }
+            client.delete(session)
+            val requests = server.requests.get(6, java.util.concurrent.TimeUnit.SECONDS)
+            assertEquals(listOf("DELETE", "GET", "DELETE", "GET"), requests.map { it.substringBefore(' ') })
+            assertTrue(requests.all { it.startsWith(it.substringBefore(' ') + " /api/intake/sessions/review-target HTTP/1.1") })
+            assertTrue(requests.all { it.contains("Authorization: Bearer fixture-token", true) })
+        }
+    }
+
     @Test fun confirmationPostsReviewedRevisionThenVerifiesExactServerSnapshot() = runBlocking {
         val profile = """{"age":21,"height_cm":175,"weight_kg":70,"goal":"muscle","location":"gym","equipment":["dumbbell"],"days_per_week":3,"minutes_per_session":30,"experience":"beginner","current_discomfort":"none","medical_restrictions":"none"}"""
         val response = """{"session_id":"session","assistant_text":"摘要已确认","status":"ready","provider_mode":"deepseek_official","validated_profile":$profile,"missing_fields":[],"revision":3,"confirmed":true}"""
