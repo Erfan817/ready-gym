@@ -1,0 +1,207 @@
+{
+  "version": "0.4.0",
+  "version_code": 5,
+  "status": "verified_development_demo_not_production_medical_certification",
+  "review_gate": {
+    "passed": true,
+    "backend_recheck": "deleg_37341d2b",
+    "android_recheck": "deleg_ffe3c6c2",
+    "scope": "Enumerated Foundation route-lock-toolargs and unknown-confirmation fixes",
+    "security_concerns": [],
+    "logic_errors": []
+  },
+  "sources_sha256": {
+    "agent-python/ready_gym_intake.py": "357c3002b3527b8c33c0e8d3ebe3c46f7440cfafd4681deee3ca29128c7423c3",
+    "agent-python/ready_gym_foundation.py": "c8c52de8039c0c789975031dadb536492506d2ac0c24319f6052cd4608d52841",
+    "agent-python/ready_gym_demo.py": "51ae282b6577bfa46f13bc6d38c45d3df9ebb5278eb9e4adeac6e65a0dc052ad",
+    "business-java/src/main/java/com/readygym/business/BusinessServer.java": "2188497ee156d589c5938cf414b4954853ce5580c5e6ad32b369fb04b479ed16",
+    "business-java/src/main/java/com/readygym/business/Planner.java": "4ec27811c2980f8a4cf51b67cc47384be563a66ed77c3af02ba3f757a05cd4a1",
+    "android/app/src/main/kotlin/com/readygym/app/CoachClient.kt": "764d194f336c6d1b5a73ff61c6b640cd1f90118c6d0b09cc7a3182b6500c7dd3",
+    "android/app/src/main/kotlin/com/readygym/app/CoachChatScreen.kt": "f6da7adcf702cb3f8b9e6746ff4fbf54e3e349166c582ef4219d21883d7c78ce",
+    "android/app/src/main/kotlin/com/readygym/app/FoundationCards.kt": "5873390180a46c0ad1aff136d79aaa439c06f1e5b264f9581e967e966ba7673a",
+    "android/app/src/main/kotlin/com/readygym/app/FoundationModels.kt": "3f793d810f29701a555a6f7cb8ef24ad8b94bd1107a85ac3bfb08f348f3f2c1f",
+    "android/app/src/main/kotlin/com/readygym/app/DemoConfig.kt": "7c8be8d0df1e03baa3773a66b03cac4894fd85137f1dd162612dea6451595227"
+  },
+  "android": {
+    "bytes": 10111363,
+    "sha256": "ddf3bbc0528c3de40f8486cdfc069d3b39ec01b09840f72d103c54418e811ebd",
+    "package": "com.readygym.app",
+    "version": "0.4.0",
+    "version_code": 5,
+    "certificate_sha256": [
+      "078f0b793c898982522eb535c323c6b8b685221660d41fdc74e845939762add0"
+    ],
+    "signature": "passed",
+    "zipalign": "passed",
+    "zip_integrity": "passed",
+    "tests": {
+      "tests": 143,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "passed": 142
+    }
+  },
+  "bundled_media_verified_count": 13,
+  "full_test_class_count": 14,
+  "full_build": {
+    "log": "final-confirm-boundary-full-build.log",
+    "result": "BUILD SUCCESSFUL in 6m23s",
+    "tasks_executed": 77,
+    "unfiltered": true,
+    "test_isolation": "one class per native Robolectric JVM"
+  },
+  "backend_tests": {
+    "total": 61,
+    "passed": 61,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "runtime": "dedicated project Python venv",
+    "legacy_nonfoundation": 41
+  },
+  "business_java_real_postgres_tests": {
+    "total": 13,
+    "passed": 13,
+    "failures": 0,
+    "not_mock_database": true
+  },
+  "media_data_checks": {
+    "data_import": 4,
+    "original_artwork": 2,
+    "legacy_commons_gif": 1,
+    "six_source_gif_thumbnail_contract": 1
+  },
+  "delivery_zip": {
+    "path": "/home/ubuntu/.hermes/cache/scratch/ready-gym-delivery-v0.4.0/ready-gym-v0.4.0-android.zip",
+    "bytes": 9643476,
+    "sha256": "650f24dd35294e69439cec88678abd2ba9cebc3e141533d68e95c26d67ac722f",
+    "only_main_apk": true
+  },
+  "live_acceptance": {
+    "real_provider": true,
+    "model": "deepseek-flash",
+    "business": "Java17/PostgreSQL",
+    "fictional_data_only": true,
+    "stages": [
+      {
+        "stage": "start",
+        "status": "collecting",
+        "calls_used": 1
+      },
+      {
+        "stage": "profile_summary",
+        "status": "ready",
+        "calls_used": 3
+      },
+      {
+        "stage": "real_tool_plan_draft",
+        "agent_source": "deepseek_tool_calls",
+        "tool_trace": [
+          {
+            "name": "get_profile",
+            "status": "ok"
+          },
+          {
+            "name": "check_entitlement",
+            "status": "ok"
+          },
+          {
+            "name": "propose_plan",
+            "status": "ok"
+          }
+        ],
+        "revision": 1
+      },
+      {
+        "stage": "confirmed_java_version1",
+        "revision": 1
+      },
+      {
+        "stage": "real_natural_language_revision",
+        "tool_trace": [
+          {
+            "name": "get_profile",
+            "status": "ok"
+          },
+          {
+            "name": "get_training_history",
+            "status": "ok"
+          },
+          {
+            "name": "propose_revision",
+            "status": "ok"
+          }
+        ],
+        "new_training_days": [
+          1,
+          2,
+          4,
+          5
+        ],
+        "old_active_revision": 1
+      },
+      {
+        "stage": "java_persisted_versions",
+        "revisions": [
+          1,
+          2
+        ]
+      },
+      {
+        "stage": "risk_stop",
+        "route": "stop_and_seek_care",
+        "no_extra_model_call": true
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 12296,
+      "completion_tokens": 454,
+      "total_tokens": 12750
+    },
+    "calls_used": 7,
+    "completed": true,
+    "demo_records_deleted_verified": true
+  },
+  "deployed_https_acceptance": {
+    "url": "https://150.158.125.67:26100/ready-gym-demo",
+    "trusted_https": true,
+    "anonymous_model_creation_denied": 401,
+    "no_consent_denied": 403,
+    "schema_readback_exact": true,
+    "deployed_real_first_question": {
+      "http_status": 201,
+      "source": "server_policy",
+      "provider_mode": "deepseek_official",
+      "calls_used": 1,
+      "usage": {
+        "prompt_tokens": 566,
+        "completion_tokens": 23,
+        "total_tokens": 589
+      }
+    },
+    "temporary_live_session_deleted_verified": true,
+    "services": {
+      "ready-gym-agent.service": "Result=success\nActiveState=active\nUnitFileState=disabled",
+      "ready-gym-business.service": "Result=success\nActiveState=active\nUnitFileState=disabled",
+      "ready-gym-postgres.service": "Result=success\nActiveState=active\nUnitFileState=disabled"
+    },
+    "auto_start_enabled": false
+  },
+  "private_values_scan": {
+    "source": "no dedicated private values found",
+    "apk": "no dedicated private values in decompressed entries",
+    "values_in_this_record": false
+  },
+  "limitations": [
+    "No connected Android device; instrumentation APK compiled only",
+    "Robolectric renders/fixture HTTP are host evidence, not live phone screenshots",
+    "Android26/27 GIF, IME, TalkBack, OEM not verified",
+    "Self-authored rule templates not professionally reviewed or medical prescriptions",
+    "No production account recovery, log_set, RAG/pgvector, commerce, membership or automatic progression",
+    "Conversation/session credentials in memory; business confirmations in PostgreSQL",
+    "No promised timed background business TTL erasure; explicit delete reads actual404",
+    "Known token usage not total bill; failed requests may incur unknown charge"
+  ],
+  "external_source_and_email_delivery": "verify separately by exact remote readback"
+}

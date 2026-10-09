@@ -1,0 +1,44 @@
+[
+  {
+    "file": "jackson-core-2.18.3.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-core/2.18.3/jackson-core-2.18.3.jar",
+    "upstream_sha1": "78f80c259268200e588aa204dd97ecf09b76916e",
+    "sha256": "056bc4d3e5e53ce821450fa97b3f9e0f8dde125cf6da6884353bb1f09582e1d9",
+    "bytes": 598026
+  },
+  {
+    "file": "jackson-annotations-2.18.3.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.18.3/jackson-annotations-2.18.3.jar",
+    "upstream_sha1": "7fa21cf7da4598f8240e4ebd9779249622af1acd",
+    "sha256": "8aa5740d80b5a5025508b41bbadbaa1fb3772267c628b2e30681a4f45f8b8931",
+    "bytes": 78502
+  },
+  {
+    "file": "jackson-databind-2.18.3.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.18.3/jackson-databind-2.18.3.jar",
+    "upstream_sha1": "537e3886263e3b3464385040453e92567fd509e2",
+    "sha256": "510bdda75a7a6186c5bf33b851239488a1450906ae5757121f2e1cc48a7e108f",
+    "bytes": 1659155
+  },
+  {
+    "file": "postgresql-42.7.5.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/postgresql/postgresql/42.7.5/postgresql-42.7.5.jar",
+    "upstream_sha1": "747897987b86c741fb8b56f6b81929ae1e6e4b46",
+    "sha256": "69020b3bd20984543e817393f2e6c01a890ef2e37a77dd11d6d8508181d079ab",
+    "bytes": 1087908
+  },
+  {
+    "file": "h2-2.3.232.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/h2database/h2/2.3.232/h2-2.3.232.jar",
+    "upstream_sha1": "4fcc05d966ccdb2812ae8b9a718f69226c0cf4e2",
+    "sha256": "8dae62d22db8982c3dcb3826edb9c727c5d302063a67eef7d63d82de401f07d3",
+    "bytes": 2651157
+  },
+  {
+    "file": "junit-platform-console-standalone-1.11.4.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-console-standalone/1.11.4/junit-platform-console-standalone-1.11.4.jar",
+    "upstream_sha1": "44650aaff63a4dbb63cb0bf0f3725a4eb9406da1",
+    "sha256": "b016ef6b1c3454d6d7c2c88ce081dabf289699686af6622d6e4e2e1b54b4a2fc",
+    "bytes": 2809597
+  }
+]

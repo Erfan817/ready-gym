@@ -1,0 +1,1043 @@
+{
+  "provenance": "Captured actual Java17/PostgreSQL HTTP replies; profile is fictional, no model/key/tokens",
+  "replies": [
+    {
+      "session_id": "captured_java_contract_fixture",
+      "assistant_text": "已通过工具生成计划草稿，请查看安排与差异；明确确认后才保存并生效。",
+      "profile": {
+        "age": 30,
+        "height_cm": 170.0,
+        "weight_kg": 65.0,
+        "gender": null,
+        "goal": "muscle",
+        "location": "home",
+        "equipment": [
+          "dumbbell"
+        ],
+        "days_per_week": 3,
+        "minutes_per_session": 30,
+        "experience": "beginner",
+        "current_discomfort": "none",
+        "medical_restrictions": "none"
+      },
+      "validated_profile": {
+        "age": 30,
+        "height_cm": 170.0,
+        "weight_kg": 65.0,
+        "gender": null,
+        "goal": "muscle",
+        "location": "home",
+        "equipment": [
+          "dumbbell"
+        ],
+        "days_per_week": 3,
+        "minutes_per_session": 30,
+        "experience": "beginner",
+        "current_discomfort": "none",
+        "medical_restrictions": "none"
+      },
+      "missing_fields": [],
+      "clarification_fields": [],
+      "status": "ready",
+      "provider_mode": "deepseek_official",
+      "response_source": "server_policy",
+      "usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "revision": 1,
+      "confirmed": true,
+      "safety_route": null,
+      "calls_used": 0,
+      "expires_in_seconds": 0,
+      "foundation_enabled": true,
+      "plan_proposal": {
+        "id": "22b98afa-d2fd-496d-8e7e-840707b848a3",
+        "revision": 1,
+        "status": "draft",
+        "based_on_revision": null,
+        "title": "一周基础抗阻计划",
+        "days_per_week": 3,
+        "minutes_per_session": 30,
+        "source": "agent_rule_tool",
+        "review_status": "not_professionally_reviewed",
+        "equipment": [
+          "dumbbell"
+        ],
+        "training_days": [
+          1,
+          3,
+          5
+        ],
+        "unavailable_days": [],
+        "changes": [],
+        "week": [
+          {
+            "day_of_week": 1,
+            "kind": "training",
+            "exercises": [
+              {
+                "slot_id": "d1-s1",
+                "exercise_id": "rg-v1-bodyweight-squat",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d1-s2",
+                "exercise_id": "rg-v1-knee-push-up",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d1-s3",
+                "exercise_id": "rg-v1-glute-bridge",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d1-s4",
+                "exercise_id": "rg-v1-dead-bug",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": null,
+                "reps_max": null,
+                "seconds": 20
+              },
+              {
+                "slot_id": "d1-s5",
+                "exercise_id": "rg-v1-dumbbell-row",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              }
+            ],
+            "budget_seconds": 1800,
+            "warm_up_seconds": 180,
+            "cool_down_seconds": 120,
+            "transition_seconds_per_exercise": 30,
+            "estimated_seconds": 1686
+          },
+          {
+            "day_of_week": 2,
+            "kind": "rest",
+            "exercises": []
+          },
+          {
+            "day_of_week": 3,
+            "kind": "training",
+            "exercises": [
+              {
+                "slot_id": "d3-s1",
+                "exercise_id": "rg-v1-bodyweight-squat",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d3-s2",
+                "exercise_id": "rg-v1-knee-push-up",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d3-s3",
+                "exercise_id": "rg-v1-glute-bridge",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d3-s4",
+                "exercise_id": "rg-v1-dead-bug",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": null,
+                "reps_max": null,
+                "seconds": 20
+              },
+              {
+                "slot_id": "d3-s5",
+                "exercise_id": "rg-v1-dumbbell-row",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              }
+            ],
+            "budget_seconds": 1800,
+            "warm_up_seconds": 180,
+            "cool_down_seconds": 120,
+            "transition_seconds_per_exercise": 30,
+            "estimated_seconds": 1686
+          },
+          {
+            "day_of_week": 4,
+            "kind": "rest",
+            "exercises": []
+          },
+          {
+            "day_of_week": 5,
+            "kind": "training",
+            "exercises": [
+              {
+                "slot_id": "d5-s1",
+                "exercise_id": "rg-v1-bodyweight-squat",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d5-s2",
+                "exercise_id": "rg-v1-knee-push-up",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d5-s3",
+                "exercise_id": "rg-v1-glute-bridge",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d5-s4",
+                "exercise_id": "rg-v1-dead-bug",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": null,
+                "reps_max": null,
+                "seconds": 20
+              },
+              {
+                "slot_id": "d5-s5",
+                "exercise_id": "rg-v1-dumbbell-row",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              }
+            ],
+            "budget_seconds": 1800,
+            "warm_up_seconds": 180,
+            "cool_down_seconds": 120,
+            "transition_seconds_per_exercise": 30,
+            "estimated_seconds": 1686
+          },
+          {
+            "day_of_week": 6,
+            "kind": "rest",
+            "exercises": []
+          },
+          {
+            "day_of_week": 7,
+            "kind": "rest",
+            "exercises": []
+          }
+        ],
+        "notices": [
+          "未经专业审核，不是医疗处方或安全认证；不推算负重，不追求力竭",
+          "时长包含热身、冷身与动作过渡；仅为估算，不要为赶时间跳过休息",
+          "徒手动作为器械补充，不表示改写用户器械选择"
+        ]
+      },
+      "active_plan": null,
+      "tool_trace": [],
+      "agent_source": "server_policy",
+      "agent_notice": null
+    },
+    {
+      "session_id": "captured_java_contract_fixture",
+      "assistant_text": "当前计划已由你明确确认并保存。你可以直接告诉我想改的排期或器械条件，我会先展示差异。",
+      "profile": {
+        "age": 30,
+        "height_cm": 170.0,
+        "weight_kg": 65.0,
+        "gender": null,
+        "goal": "muscle",
+        "location": "home",
+        "equipment": [
+          "dumbbell"
+        ],
+        "days_per_week": 3,
+        "minutes_per_session": 30,
+        "experience": "beginner",
+        "current_discomfort": "none",
+        "medical_restrictions": "none"
+      },
+      "validated_profile": {
+        "age": 30,
+        "height_cm": 170.0,
+        "weight_kg": 65.0,
+        "gender": null,
+        "goal": "muscle",
+        "location": "home",
+        "equipment": [
+          "dumbbell"
+        ],
+        "days_per_week": 3,
+        "minutes_per_session": 30,
+        "experience": "beginner",
+        "current_discomfort": "none",
+        "medical_restrictions": "none"
+      },
+      "missing_fields": [],
+      "clarification_fields": [],
+      "status": "ready",
+      "provider_mode": "deepseek_official",
+      "response_source": "server_policy",
+      "usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "revision": 1,
+      "confirmed": true,
+      "safety_route": null,
+      "calls_used": 0,
+      "expires_in_seconds": 0,
+      "foundation_enabled": true,
+      "plan_proposal": null,
+      "active_plan": {
+        "id": "22b98afa-d2fd-496d-8e7e-840707b848a3",
+        "revision": 1,
+        "status": "confirmed",
+        "based_on_revision": null,
+        "title": "一周基础抗阻计划",
+        "days_per_week": 3,
+        "minutes_per_session": 30,
+        "source": "agent_rule_tool",
+        "review_status": "not_professionally_reviewed",
+        "equipment": [
+          "dumbbell"
+        ],
+        "training_days": [
+          1,
+          3,
+          5
+        ],
+        "unavailable_days": [],
+        "changes": [],
+        "week": [
+          {
+            "day_of_week": 1,
+            "kind": "training",
+            "exercises": [
+              {
+                "slot_id": "d1-s1",
+                "exercise_id": "rg-v1-bodyweight-squat",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d1-s2",
+                "exercise_id": "rg-v1-knee-push-up",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d1-s3",
+                "exercise_id": "rg-v1-glute-bridge",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d1-s4",
+                "exercise_id": "rg-v1-dead-bug",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": null,
+                "reps_max": null,
+                "seconds": 20
+              },
+              {
+                "slot_id": "d1-s5",
+                "exercise_id": "rg-v1-dumbbell-row",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              }
+            ],
+            "budget_seconds": 1800,
+            "warm_up_seconds": 180,
+            "cool_down_seconds": 120,
+            "transition_seconds_per_exercise": 30,
+            "estimated_seconds": 1686
+          },
+          {
+            "day_of_week": 2,
+            "kind": "rest",
+            "exercises": []
+          },
+          {
+            "day_of_week": 3,
+            "kind": "training",
+            "exercises": [
+              {
+                "slot_id": "d3-s1",
+                "exercise_id": "rg-v1-bodyweight-squat",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d3-s2",
+                "exercise_id": "rg-v1-knee-push-up",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d3-s3",
+                "exercise_id": "rg-v1-glute-bridge",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d3-s4",
+                "exercise_id": "rg-v1-dead-bug",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": null,
+                "reps_max": null,
+                "seconds": 20
+              },
+              {
+                "slot_id": "d3-s5",
+                "exercise_id": "rg-v1-dumbbell-row",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              }
+            ],
+            "budget_seconds": 1800,
+            "warm_up_seconds": 180,
+            "cool_down_seconds": 120,
+            "transition_seconds_per_exercise": 30,
+            "estimated_seconds": 1686
+          },
+          {
+            "day_of_week": 4,
+            "kind": "rest",
+            "exercises": []
+          },
+          {
+            "day_of_week": 5,
+            "kind": "training",
+            "exercises": [
+              {
+                "slot_id": "d5-s1",
+                "exercise_id": "rg-v1-bodyweight-squat",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d5-s2",
+                "exercise_id": "rg-v1-knee-push-up",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d5-s3",
+                "exercise_id": "rg-v1-glute-bridge",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d5-s4",
+                "exercise_id": "rg-v1-dead-bug",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": null,
+                "reps_max": null,
+                "seconds": 20
+              },
+              {
+                "slot_id": "d5-s5",
+                "exercise_id": "rg-v1-dumbbell-row",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              }
+            ],
+            "budget_seconds": 1800,
+            "warm_up_seconds": 180,
+            "cool_down_seconds": 120,
+            "transition_seconds_per_exercise": 30,
+            "estimated_seconds": 1686
+          },
+          {
+            "day_of_week": 6,
+            "kind": "rest",
+            "exercises": []
+          },
+          {
+            "day_of_week": 7,
+            "kind": "rest",
+            "exercises": []
+          }
+        ],
+        "notices": [
+          "未经专业审核，不是医疗处方或安全认证；不推算负重，不追求力竭",
+          "时长包含热身、冷身与动作过渡；仅为估算，不要为赶时间跳过休息",
+          "徒手动作为器械补充，不表示改写用户器械选择"
+        ]
+      },
+      "tool_trace": [],
+      "agent_source": "server_policy",
+      "agent_notice": null
+    },
+    {
+      "session_id": "captured_java_contract_fixture",
+      "assistant_text": "已通过工具生成计划草稿，请查看安排与差异；明确确认后才保存并生效。",
+      "profile": {
+        "age": 30,
+        "height_cm": 170.0,
+        "weight_kg": 65.0,
+        "gender": null,
+        "goal": "muscle",
+        "location": "home",
+        "equipment": [
+          "dumbbell"
+        ],
+        "days_per_week": 3,
+        "minutes_per_session": 30,
+        "experience": "beginner",
+        "current_discomfort": "none",
+        "medical_restrictions": "none"
+      },
+      "validated_profile": {
+        "age": 30,
+        "height_cm": 170.0,
+        "weight_kg": 65.0,
+        "gender": null,
+        "goal": "muscle",
+        "location": "home",
+        "equipment": [
+          "dumbbell"
+        ],
+        "days_per_week": 3,
+        "minutes_per_session": 30,
+        "experience": "beginner",
+        "current_discomfort": "none",
+        "medical_restrictions": "none"
+      },
+      "missing_fields": [],
+      "clarification_fields": [],
+      "status": "ready",
+      "provider_mode": "deepseek_official",
+      "response_source": "server_policy",
+      "usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "revision": 1,
+      "confirmed": true,
+      "safety_route": null,
+      "calls_used": 0,
+      "expires_in_seconds": 0,
+      "foundation_enabled": true,
+      "plan_proposal": {
+        "id": "d9585ba1-fb16-4f9f-a934-73dbc6822273",
+        "revision": 2,
+        "status": "draft",
+        "based_on_revision": 1,
+        "title": "一周基础抗阻计划",
+        "days_per_week": 4,
+        "minutes_per_session": 30,
+        "source": "agent_rule_tool",
+        "review_status": "not_professionally_reviewed",
+        "equipment": [
+          "dumbbell"
+        ],
+        "training_days": [
+          1,
+          2,
+          4,
+          5
+        ],
+        "unavailable_days": [
+          3
+        ],
+        "changes": [
+          {
+            "field": "days_per_week",
+            "before": "3",
+            "after": "4"
+          },
+          {
+            "field": "unavailable_days",
+            "before": "[]",
+            "after": "[3]"
+          }
+        ],
+        "week": [
+          {
+            "day_of_week": 1,
+            "kind": "training",
+            "exercises": [
+              {
+                "slot_id": "d1-s1",
+                "exercise_id": "rg-v1-bodyweight-squat",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d1-s2",
+                "exercise_id": "rg-v1-glute-bridge",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d1-s3",
+                "exercise_id": "rg-v1-dead-bug",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": null,
+                "reps_max": null,
+                "seconds": 20
+              }
+            ],
+            "budget_seconds": 1800,
+            "warm_up_seconds": 180,
+            "cool_down_seconds": 120,
+            "transition_seconds_per_exercise": 30,
+            "estimated_seconds": 1098
+          },
+          {
+            "day_of_week": 2,
+            "kind": "training",
+            "exercises": [
+              {
+                "slot_id": "d2-s1",
+                "exercise_id": "rg-v1-knee-push-up",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d2-s2",
+                "exercise_id": "rg-v1-dead-bug",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": null,
+                "reps_max": null,
+                "seconds": 20
+              },
+              {
+                "slot_id": "d2-s3",
+                "exercise_id": "rg-v1-dumbbell-row",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              }
+            ],
+            "budget_seconds": 1800,
+            "warm_up_seconds": 180,
+            "cool_down_seconds": 120,
+            "transition_seconds_per_exercise": 30,
+            "estimated_seconds": 1098
+          },
+          {
+            "day_of_week": 3,
+            "kind": "rest",
+            "exercises": []
+          },
+          {
+            "day_of_week": 4,
+            "kind": "training",
+            "exercises": [
+              {
+                "slot_id": "d4-s1",
+                "exercise_id": "rg-v1-bodyweight-squat",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d4-s2",
+                "exercise_id": "rg-v1-glute-bridge",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d4-s3",
+                "exercise_id": "rg-v1-dead-bug",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": null,
+                "reps_max": null,
+                "seconds": 20
+              }
+            ],
+            "budget_seconds": 1800,
+            "warm_up_seconds": 180,
+            "cool_down_seconds": 120,
+            "transition_seconds_per_exercise": 30,
+            "estimated_seconds": 1098
+          },
+          {
+            "day_of_week": 5,
+            "kind": "training",
+            "exercises": [
+              {
+                "slot_id": "d5-s1",
+                "exercise_id": "rg-v1-knee-push-up",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d5-s2",
+                "exercise_id": "rg-v1-dead-bug",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": null,
+                "reps_max": null,
+                "seconds": 20
+              },
+              {
+                "slot_id": "d5-s3",
+                "exercise_id": "rg-v1-dumbbell-row",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              }
+            ],
+            "budget_seconds": 1800,
+            "warm_up_seconds": 180,
+            "cool_down_seconds": 120,
+            "transition_seconds_per_exercise": 30,
+            "estimated_seconds": 1098
+          },
+          {
+            "day_of_week": 6,
+            "kind": "rest",
+            "exercises": []
+          },
+          {
+            "day_of_week": 7,
+            "kind": "rest",
+            "exercises": []
+          }
+        ],
+        "notices": [
+          "未经专业审核，不是医疗处方或安全认证；不推算负重，不追求力竭",
+          "时长包含热身、冷身与动作过渡；仅为估算，不要为赶时间跳过休息",
+          "徒手动作为器械补充，不表示改写用户器械选择",
+          "四天采用上下肢交替；相邻训练日重点不同，仍应观察恢复"
+        ]
+      },
+      "active_plan": {
+        "id": "22b98afa-d2fd-496d-8e7e-840707b848a3",
+        "revision": 1,
+        "status": "confirmed",
+        "based_on_revision": null,
+        "title": "一周基础抗阻计划",
+        "days_per_week": 3,
+        "minutes_per_session": 30,
+        "source": "agent_rule_tool",
+        "review_status": "not_professionally_reviewed",
+        "equipment": [
+          "dumbbell"
+        ],
+        "training_days": [
+          1,
+          3,
+          5
+        ],
+        "unavailable_days": [],
+        "changes": [],
+        "week": [
+          {
+            "day_of_week": 1,
+            "kind": "training",
+            "exercises": [
+              {
+                "slot_id": "d1-s1",
+                "exercise_id": "rg-v1-bodyweight-squat",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d1-s2",
+                "exercise_id": "rg-v1-knee-push-up",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d1-s3",
+                "exercise_id": "rg-v1-glute-bridge",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d1-s4",
+                "exercise_id": "rg-v1-dead-bug",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": null,
+                "reps_max": null,
+                "seconds": 20
+              },
+              {
+                "slot_id": "d1-s5",
+                "exercise_id": "rg-v1-dumbbell-row",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              }
+            ],
+            "budget_seconds": 1800,
+            "warm_up_seconds": 180,
+            "cool_down_seconds": 120,
+            "transition_seconds_per_exercise": 30,
+            "estimated_seconds": 1686
+          },
+          {
+            "day_of_week": 2,
+            "kind": "rest",
+            "exercises": []
+          },
+          {
+            "day_of_week": 3,
+            "kind": "training",
+            "exercises": [
+              {
+                "slot_id": "d3-s1",
+                "exercise_id": "rg-v1-bodyweight-squat",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d3-s2",
+                "exercise_id": "rg-v1-knee-push-up",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d3-s3",
+                "exercise_id": "rg-v1-glute-bridge",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d3-s4",
+                "exercise_id": "rg-v1-dead-bug",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": null,
+                "reps_max": null,
+                "seconds": 20
+              },
+              {
+                "slot_id": "d3-s5",
+                "exercise_id": "rg-v1-dumbbell-row",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              }
+            ],
+            "budget_seconds": 1800,
+            "warm_up_seconds": 180,
+            "cool_down_seconds": 120,
+            "transition_seconds_per_exercise": 30,
+            "estimated_seconds": 1686
+          },
+          {
+            "day_of_week": 4,
+            "kind": "rest",
+            "exercises": []
+          },
+          {
+            "day_of_week": 5,
+            "kind": "training",
+            "exercises": [
+              {
+                "slot_id": "d5-s1",
+                "exercise_id": "rg-v1-bodyweight-squat",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d5-s2",
+                "exercise_id": "rg-v1-knee-push-up",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d5-s3",
+                "exercise_id": "rg-v1-glute-bridge",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              },
+              {
+                "slot_id": "d5-s4",
+                "exercise_id": "rg-v1-dead-bug",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": null,
+                "reps_max": null,
+                "seconds": 20
+              },
+              {
+                "slot_id": "d5-s5",
+                "exercise_id": "rg-v1-dumbbell-row",
+                "sets": 3,
+                "rest_seconds": 60,
+                "load_kg": null,
+                "reps_min": 8,
+                "reps_max": 12
+              }
+            ],
+            "budget_seconds": 1800,
+            "warm_up_seconds": 180,
+            "cool_down_seconds": 120,
+            "transition_seconds_per_exercise": 30,
+            "estimated_seconds": 1686
+          },
+          {
+            "day_of_week": 6,
+            "kind": "rest",
+            "exercises": []
+          },
+          {
+            "day_of_week": 7,
+            "kind": "rest",
+            "exercises": []
+          }
+        ],
+        "notices": [
+          "未经专业审核，不是医疗处方或安全认证；不推算负重，不追求力竭",
+          "时长包含热身、冷身与动作过渡；仅为估算，不要为赶时间跳过休息",
+          "徒手动作为器械补充，不表示改写用户器械选择"
+        ]
+      },
+      "tool_trace": [],
+      "agent_source": "server_policy",
+      "agent_notice": null
+    }
+  ]
+}

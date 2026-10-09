@@ -1,6 +1,12 @@
-# Ready Gym 对话建档开发服务
+# Ready Gym Python · Foundation Demo v0.4.0
 
-**仅收集资料与显式确认，不生成训练计划、不代替医疗评估。** 使用真正的DeepSeek官方HTTP适配器，无模拟兜底；未配置Key返回503。本轮没有读取任何真实Key，也没有执行真实DeepSeek付费调用，账号可用性/真实模型响应仍待有限验收。
+**已新增真实 Agent 工具循环和 Java/PostgreSQL业务确认路径。** 验证运行使用官方 `deepseek-flash`，建档→工具草稿→明确确认v1→自然语言修订→确认v2→历史/风险阻断最近修复后验证共7次模型调用、已知12,750tokens（此前一轮11,153tokens），使用虚构成人样例且删除读回404。Key只专用服务端私密配置，不进入源码/日志/APK。具体启动见 [`../docs/foundation-demo-runbook.md`](../docs/foundation-demo-runbook.md)，契约见 [`../docs/foundation-demo-contract.md`](../docs/foundation-demo-contract.md)。
+
+旧建档接口仍兼容；下面“仅建档”说明仅针对 `ready_gym_intake:create_app` 的旧路径，不代表新 Foundation工具未实现。真实 Agent 最大3轮/每轮3tools，无confirm/save工具；Java唯一确认业务写入者，PostgreSQL仅回环访问。普通模型文字不决定写入或直接当处方，资料明确确认才进入规则工具。
+
+**模型超时/无效输出时**：安全完整确认档案且没有active时，可提供明确 `rule_fallback` 自编草稿；已有计划时不猜变更、不采用旧pending。模板未经专业审核，不称专家审核，不提供医疗处方。未经有效Demo访问码的请求先401、不会花模型预算。新接口总览：`foundation/confirm-profile`、`foundation/messages`、`foundation/confirm-plan`、`GET foundation`，session Bearer和Demo门控共同有效。
+
+默认工厂仍不读真实Key，不配置provider明确503；mock只用于契约回归，不作为live验收。
 
 ## 本地运行（单进程、仅回环）
 

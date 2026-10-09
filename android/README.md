@@ -1,4 +1,19 @@
-# Ready Gym Android · v0.3.0
+# Ready Gym Android · v0.4.0 Foundation Demo
+
+versionCode5，Android8.0+。新增对话内规则计划草稿/生效版/修订差异和明确确认，确认由Java业务服务写入PostgreSQL；真实DeepSeek工具闭环已有限验收。六动作原始GIF与浅色主题保持。运行时“Demo连接设置”输入专用访问码，仅Activity内存保存，模型Key/访问码均不编入APK；进程结束需重新输入。默认非secret地址 `https://150.158.125.67:26100/ready-gym-demo`，只配置不等于连接。
+
+完整操作见 [`../docs/foundation-demo-runbook.md`](../docs/foundation-demo-runbook.md)。每个工具提案尚未确认不会覆盖生效版；unknown确认保留原资料版本/完整clientcandidate/draft，只读GET复用相同核验，未发送输入保留且发送禁用。计时核心动作保留seconds而非伪造次数；跨端实际Java/PG回复已纳入HTTP回归。下面v0.3.0描述与哈希属于历史，不能当新安装包验收。
+
+## v0.4.0 构建实物与主机验收
+
+在最后正常确认GET边界修正后，父以 `--rerun-tasks --init-script scripts/isolated-native-tests.gradle` 无过滤重跑全部14测试类，并重建主APK/设备测试APK：**BUILD SUCCESSFUL in6m23s，77 tasks全执行**。JUnit143项：**142通过、1明确legacy跳过、0失败/错误**；后端61项、真实PG Java13项通过。最晚限定独立复验`deleg_ffe3c6c2`通过；设备测试APK只是编译，未连接手机运行。
+
+- 主APK SHA256 `ddf3bbc0528c3de40f8486cdfc069d3b39ec01b09840f72d103c54418e811ebd`，10,111,363bytes，package`com.readygym.app`，v0.4.0/code5。
+- 签名沿用既有证书、zipalign/ZIP/13媒体asset字节核验通过；实际专用Key/访问码/DB密码/internaltoken字节扫描无泄露。
+- 交付ZIP只含唯一主APK，9,643,476bytes，SHA256 `650f24dd35294e69439cec88678abd2ba9cebc3e141533d68e95c26d67ac722f`。源码上传/邮件以精确目标回读验收，不能只凭入队或命令成功。
+- 证据 `build/verification/v0.4.0/final-confirm-boundary-full-build.log` / `final-confirm-boundary-artifact.json`，精确unknownREDGREEN在`unknown-recovery/`。
+
+## 历史：v0.3.0
 
 Kotlin + Jetpack Compose；包名 `com.readygym.app`，versionCode4，min SDK26（Android8.0），target/compile SDK35。沿用既有Debug签名，可作为旧测试版的更新包；不是商店发布版。
 

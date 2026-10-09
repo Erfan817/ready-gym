@@ -425,6 +425,7 @@
     "/api/intake/sessions/{session_id}/messages": {
       "post": {
         "summary": "Message",
+        "description": "Legacy intake message. Foundation-enabled sessions return 409 foundation_required without modifying profile or plans; use /foundation/messages instead.",
         "operationId": "message_api_intake_sessions__session_id__messages_post",
         "security": [
           {
@@ -579,6 +580,7 @@
     "/api/intake/sessions/{session_id}/confirm": {
       "post": {
         "summary": "Confirm",
+        "description": "Legacy profile confirmation. Foundation-enabled sessions return 409 foundation_required; use /foundation/confirm-profile to confirm the matching business profile.",
         "operationId": "confirm_api_intake_sessions__session_id__confirm_post",
         "security": [
           {
@@ -1074,6 +1076,64 @@
           "expires_in_seconds": {
             "type": "integer",
             "title": "Expires In Seconds"
+          },
+          "foundation_enabled": {
+            "type": "boolean",
+            "title": "Foundation Enabled",
+            "default": false
+          },
+          "plan_proposal": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Proposal"
+          },
+          "active_plan": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Plan"
+          },
+          "tool_trace": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Tool Trace"
+          },
+          "agent_source": {
+            "type": "string",
+            "enum": [
+              "deepseek_tool_calls",
+              "rule_fallback",
+              "server_policy"
+            ],
+            "title": "Agent Source",
+            "default": "server_policy"
+          },
+          "agent_notice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Notice"
           }
         },
         "additionalProperties": false,
@@ -1225,6 +1285,64 @@
           "expires_in_seconds": {
             "type": "integer",
             "title": "Expires In Seconds"
+          },
+          "foundation_enabled": {
+            "type": "boolean",
+            "title": "Foundation Enabled",
+            "default": false
+          },
+          "plan_proposal": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Proposal"
+          },
+          "active_plan": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Plan"
+          },
+          "tool_trace": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Tool Trace"
+          },
+          "agent_source": {
+            "type": "string",
+            "enum": [
+              "deepseek_tool_calls",
+              "rule_fallback",
+              "server_policy"
+            ],
+            "title": "Agent Source",
+            "default": "server_policy"
+          },
+          "agent_notice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Notice"
           },
           "session_token": {
             "type": "string",

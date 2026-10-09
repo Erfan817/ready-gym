@@ -1,0 +1,10 @@
+// Robolectric native-graphics sandboxes retain process-global state.
+// Fork each test class, one at a time; this is isolation, not test filtering.
+allprojects {
+    tasks.withType(Test).configureEach {
+        forkEvery = 1
+        maxParallelForks = 1
+        minHeapSize = "128m"
+        maxHeapSize = "384m"
+    }
+}

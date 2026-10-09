@@ -25,8 +25,11 @@ import java.util.UUID
 /** The offline form is opt-in; chat is the official entry. */
 @Composable
 fun ReadyGymApp(client: CoachClient? = null, serviceConfigured: Boolean = BuildConfig.DEBUG && BuildConfig.SERVICE_BASE_URL.isNotBlank()) {
-    val actualClient = remember(client) { client ?: HttpCoachClient(BuildConfig.SERVICE_BASE_URL, BuildConfig.DEBUG) }
     val activity = androidx.compose.ui.platform.LocalContext.current as androidx.activity.ComponentActivity
+    val demo = remember(activity) { androidx.lifecycle.ViewModelProvider(activity)[DemoConfig::class.java] }
+    val actualClient = remember(client, demo) { client ?: demo }
+    var showDemoConfig by remember { mutableStateOf(false) }
+    if (showDemoConfig) DemoConfigDialog(demo) { showDemoConfig = false }
     val coach = remember(activity, actualClient) {
         androidx.lifecycle.ViewModelProvider(activity, object : androidx.lifecycle.ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -43,7 +46,7 @@ fun ReadyGymApp(client: CoachClient? = null, serviceConfigured: Boolean = BuildC
     when {
         current != null -> TrainingPlanScreen(current, preferences, coach.retainedSafety, coach::recordSafety)
         offline -> OnboardingScreen(onStartPlanning = { preferences = null; profile = it })
-        else -> CoachChatScreen(coach, serviceConfigured, onOffline = { offline = true }, onConfirmed = { preferences = it.preferences; profile = it.profile })
+        else -> CoachChatScreen(coach, if (client == null) demo.configured else serviceConfigured, onOffline = { offline = true }, onConfirmed = { preferences = it.preferences; profile = it.profile }, onConfigure = if (client == null) ({ showDemoConfig = true }) else null)
     }
 }
 

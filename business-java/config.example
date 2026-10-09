@@ -1,0 +1,6 @@
+# Model secrets never belong in this file.
+# This is an example of NON-secret runtime topology only.
+READY_GYM_JDBC_URL=jdbc:postgresql://127.0.0.1:55432/ready_gym_demo
+READY_GYM_DB_USER=ready_gym_demo
+# Supply DB_PASSWORD and INTERNAL_TOKEN through private environment files.
+READY_GYM_BUSINESS_PORT=8766

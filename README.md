@@ -1,42 +1,38 @@
-# Ready Gym
+# Ready Gym · Agent Foundation Demo v0.4.0
 
-目标产品：**安卓健身 App，以教练对话为入口**，了解用户资料和训练条件，再展示可执行计划、动作演示与受控修订。当前开发测试版 **v0.3.0**，不是已经接通AI的商业产品。
+安卓健身 App，以教练对话为中枢。按 [`docs/agent-as-foundation.md`](docs/agent-as-foundation.md) 做出的窄范围可运行 Demo；不是完整商业产品或医疗/训练专业认证。
 
-## 本版可操作功能
+## 一条对话完成的闭环
 
-- 阳光浅色 UI：暖白底、白卡片、橙色操作、绿色点缀；原创器械插画与 adaptive launcher 图标。
-- 正式入口为单屏教练会话，不再要求先完成四页表单。用户同意发送资料后才允许开始服务端会话；支持自然语言资料提取、缺项追问、摘要纠正、显式版本确认和删除会话。
-- **交付包服务地址为空、Ready Gym专用DeepSeek Key尚未配置。** 入口如实显示不能连接AI，不生成假模型回复。真实DeepSeek请求、HTTPS/访问控制部署仍未完成。HTTP客户端与FastAPI适配器已经实现；通过测试不等于供应商已接通。
-- 可选“离线规则模式（不使用AI）”：原卡片建档 → 目标/地点/器械 → 明确安全自述 → 规则草稿 → 七日安排/动作详情 → 用户确认。每周2/3/4天、每次20/30/45/60分钟，初学/恢复经验；进阶明确不支持。
-- 草稿与生效版分开，器械替换先出提案，明确确认才采用；风险反馈阻断普通确认和替换，不拿换动作绕过不适。
-- **当前六个计划动作已接入指定仓库原始离线GIF及JPG缩略图**：徒手深蹲、跪姿俯卧撑、低幅臀桥、固定手臂单腿伸展死虫式、双侧俯身哑铃划船、杠铃划船。点击播放、暂停/继续，默认不自动播放。变式、来源、注意事项在详情明示，未专业审核。
+1. 打开明亮的教练聊天，配置专用 Demo 访问码；明确同意后，才把训练资料发到 Ready Gym 服务端与 DeepSeek。
+2. 自然语言建档、多字段提取与缺项追问 → 摘要卡 → **明确确认资料**。
+3. **真实 DeepSeek `deepseek-flash` 工具调用**编排 `get_profile / check_entitlement / search_exercises / propose_plan / propose_revision / get_training_history`。Python 只编排读取和提案，不能调用保存/确认工具。
+4. 在同一聊天展示一周规则草稿、工具轨迹、来源和准确 GIF；**明确确认计划后，Java 才写入 PostgreSQL 并读回验证**。
+5. 直接说“周三没空，改成四天” → 展示差异和待确认 v2；v1 仍生效 → 确认后保存 v2，保留历史。
+6. 身体风险优先于模型与额度，停止普通训练/确认/替换。模型失败可给明确 `rule_fallback` 草稿；不把回退当模型生成，不推算负重。
 
-## 数据来源
+**计划是 Agent 调用经过代码约束的自编规则工具，不是模型自由处方；模板未经专业审核。** 人体快捷输入、训练组日志、RAG/pgvector、支付/会员、账号与自动进阶不在本 Demo 范围。版本历史是已保存计划，不伪造已做训练。
 
-`hasaneyldrm/exercises-dataset` 固定提交 `7455efae41b330c265e7cd4b78dfa848e7ce5ebd` 的真实JSON已经取得并按Git blob校验：1,324条、10种语言。项目导出30条精选元数据与1,324条媒体引用映射，不宣称完整动作库都已接入运行时。详见 [`data/README.md`](data/README.md)。
+## 真实验收与限制
 
-用户已明确声明获得图片/GIF的Ready Gym使用授权；本次按此获取并接入，保留 **© Gym visual** 和上游来源，媒体不重新标为MIT，不虚构审阅过授权文件。跪姿动作上游说明与画面冲突，舍弃该段说明；死虫GIF只展示固定手臂单腿伸展，不按对侧手脚版本描述。详见 [`android/docs/media-attribution.md`](android/docs/media-attribution.md)。
+- 已真实执行官方 DeepSeek + Python API + Java17 + PostgreSQL 的建档→草稿→确认 v1→自然语言修订→确认 v2→历史→风险阻断闭环。一次已验收运行共7次模型调用、已知12,750 tokens；另一次早期验收已知11,153 tokens。只使用虚构成人样例，验收后删除样例数据并读回404。这不是用户账单，失败请求可能另计费。
+- Android 为 Kotlin/Compose，沿用暖白/橙/绿 SunnyTheme；六个动作的授权原始 GIF/JPG、变式与署名保持不变。聊天资料确认不跳必填表单；离线规则入口仍为可选后备。
+- Demo 服务有可信 HTTPS、私密访问码与独立会话 Bearer 双层门控；访问码只在安卓本次 Activity 内存，不放 APK。模型 Key/数据库密码/内部服务凭据只在服务端私密配置，无 Git/APK/日志明文值。
+- 模型调用有单会话/全局上限、并发上限、超时与有限工具循环，无自动付费重试。提示和卡片由已验证结果整理，不执行检索文本/模型输出中的任意命令。
+- **不是手机验收**：Robolectric/主机 HTTP/GIF 解码与离屏图不等于真机运行。Android26/27 GIF、IME、TalkBack、OEM 系统栏仍待手机验证。
+- 会话 token/对话只在服务与 Activity 内存，旋转保留、进程结束丢失；PostgreSQL 保存明确确认的档案/计划版本，但没有账号恢复功能。服务按需启停，后台数据过期删除不作准时保证，主动删除会同时移除 Java 业务数据。
 
-## 验证与限制
+最终主机测试、APK 与限定独立复验均通过；验收记录见 [`docs/verification-v0.4.0.json`](docs/verification-v0.4.0.json)。安卓142通过、1明确legacy跳过、0失败/错误；Python61、真实PostgreSQL Java13通过。v0.3.0记录保留为历史，不标识新 APK。
 
-**本轮开发切片已通过限定独立复验，测试版可交付；这不代表真实AI或商业产品完成。** 后置整体待核实/待确认/待澄清与第三人上下文由共用判定阻止安全、数字和枚举采用；安卓start/messages/confirm（含GET读回）的2xx JSON解码、契约与非法返回会话字段失败共用安全异常边界，保留专业评估阻断或已验证的更强路线，不从损坏JSON猜诊断。全量实跑：安卓 **129通过、0失败/错误、1明确跳过**，服务端 **41通过**，数据导入 **4通过**；主APK构建、签名、ZIP、zipalign及媒体来源核验通过。验收记录见 [`docs/verification-v0.3.0.json`](docs/verification-v0.3.0.json)，修复历史与复验范围见 [`docs/review-gate-v0.3.0.md`](docs/review-gate-v0.3.0.md)。最终源码交付仍要求GitHub私有仓库推送后回读提交与文件；凭据、签名私钥和构建缓存不提交。
+## 启动与交付
 
-真实回环HTTP已验证未同意403、未配置Key503及OpenAPI一致，临时服务已关闭。一次全量测试出现Robolectric原生ImageDecoder SIGSEGV；隔离探针及随后完整无过滤重跑通过，原失败日志保留，不将其伪装成当时成功。完整计数与候选APK哈希见 [`android/README.md`](android/README.md)。
+- [Demo 操作/安全配置](docs/foundation-demo-runbook.md)
+- [共享实现契约](docs/foundation-demo-contract.md) / [Foundation OpenAPI](docs/foundation-api.json)
+- [Java业务服务](docs/foundation-business.md)
+- [Android构建](android/README.md)
+- [Python接口](agent-python/README.md)
+- [动作媒体署名](android/docs/media-attribution.md)
 
-- Robolectric Compose交互和离屏图不是手机测试；设备测试APK编译不等于运行。Android26/27 GIF分支、软键盘、TalkBack和OEM系统栏仍待真机验证。
-- 聊天及未发送输入在Activity ViewModel内存，屏幕旋转保留；结束/进程回收会丢失。规则资料和计划仍是页面内存，可能随重建丢失。无账号、历史同步、训练日志或自动进阶。
-- 当前AI只实现**建档适配与契约**，未实现AI个性化计划；确认资料后使用明确标示的规则计划。规则和媒体未专业审核，不是医疗处方或安全认证，不按BMI/性别推算负重。
-- 模型Key只放专用服务端配置，不进入APK、Git、日志或聊天。未公开运行无认证开发服务。
+固定数据源 `hasaneyldrm/exercises-dataset` 提交 `7455efae41b330c265e7cd4b78dfa848e7ce5ebd`：1,324条真实元数据，当前运行时只用准确映射的六动作。用户明确声明取得 Ready Gym 图片/GIF授权；保留 **© Gym visual**，不转为 MIT，不虚构审阅过授权书。详情见 [`data/README.md`](data/README.md)。
 
-## 工程入口
-
-- [安卓构建与验证](android/README.md)
-- [DeepSeek建档服务](agent-python/README.md)
-- [Android/服务端会话契约](android/docs/coach-api.md) / [OpenAPI](docs/intake-api.json)
-- [规则计划核心](android/core/README.md)
-- [对话优先决策](docs/conversation-first-ai.md)
-- [Agent 当地基设计](docs/agent-as-foundation.md)
-
-`frontend/` 是保留的早期React肌群点选实验，不是正式客户端，不继续扩成Web/PWA。原始灵感和规划保留。
-
-本地目录 `ready gym ` **末尾有空格**，命令中保持完整引用；SDK、缓存、构建产物、密钥和个人记录不提交Git。
+`frontend/` 仅保留早期 React 实验，不是正式客户端。源码交付到现有**私有** `Erfan817/ready-gym`；不提交 SDK、依赖 jar、构建缓存、APK、私密配置和个人训练数据。

@@ -82,6 +82,12 @@ class Session:
     in_flight: bool = False
     asked_fields: list = field(default_factory=list)
     clarification_fields: set = field(default_factory=set)
+    foundation_enabled: bool = False
+    foundation_state: dict = field(default_factory=dict, repr=False)
+    foundation_trace: list = field(default_factory=list)
+    foundation_source: str = "server_policy"
+    foundation_notice: str | None = None
+    foundation_safety_route: str | None = None
 
 
 class RequestModel(BaseModel):
@@ -145,6 +151,12 @@ class IntakeResponse(RequestModel):
     safety_route: Literal["stop_and_seek_care", "professional_review", "unsupported_experience"] | None
     calls_used: int
     expires_in_seconds: int
+    foundation_enabled: bool = False
+    plan_proposal: dict | None = None
+    active_plan: dict | None = None
+    tool_trace: list[dict] = Field(default_factory=list)
+    agent_source: Literal["deepseek_tool_calls", "rule_fallback", "server_policy"] = "server_policy"
+    agent_notice: str | None = None
 
 
 class StartResponse(IntakeResponse):
@@ -179,6 +191,7 @@ ERROR_MESSAGES = {
     "confirmation_required": "请明确确认当前档案摘要。",
     "stale_revision": "档案版本已改变，请重新核对摘要。",
     "profile_not_ready": "资料不完整或安全分流已阻断，不能采用档案。",
+    "foundation_required": "此会话已启用Foundation，请使用Foundation消息和确认入口；旧入口不会修改档案或计划。",
 }
 
 
@@ -331,11 +344,11 @@ def known_urgent(description):
 
 def safety_route(session):
     description = " ".join(session.profile.get(key) or "" for key in ("current_discomfort", "medical_restrictions"))
-    if session.urgent or known_urgent(description):
+    if session.urgent or session.foundation_safety_route == "stop_and_seek_care" or known_urgent(description):
         # Highest-risk route is a session latch, regardless of its source.
         session.urgent = True
         return "stop_and_seek_care"
-    if any(session.profile.get(key) not in {None, "none"} for key in ("current_discomfort", "medical_restrictions")):
+    if session.foundation_safety_route == "professional_review" or any(session.profile.get(key) not in {None, "none"} for key in ("current_discomfort", "medical_restrictions")):
         return "professional_review"
     if session.profile.get("experience") == "advanced":
         return "unsupported_experience"
@@ -367,7 +380,20 @@ def view(session, session_id, *, token=None):
         "revision": session.revision, "confirmed": session.confirmed, "safety_route": route,
         "calls_used": session.attempts,
         "expires_in_seconds": max(0, math.ceil(session.expires_at - time.monotonic())),
+        "foundation_enabled": session.foundation_enabled,
+        "plan_proposal": session.foundation_state.get("plan_proposal") if not route else None,
+        "active_plan": session.foundation_state.get("active_plan") if not route and session.confirmed else None,
+        "tool_trace": session.foundation_trace,
+        "agent_source": session.foundation_source,
+        "agent_notice": session.foundation_notice,
     }
+    if session.foundation_enabled and not route and session.confirmed:
+        if data["plan_proposal"]:
+            data["assistant_text"] = "已通过工具生成计划草稿，请查看安排与差异；明确确认后才保存并生效。"
+        elif data["active_plan"]:
+            data["assistant_text"] = "当前计划已由你明确确认并保存。你可以直接告诉我想改的排期或器械条件，我会先展示差异。"
+        if session.foundation_notice:
+            data["assistant_text"] += " " + session.foundation_notice
     if token is not None:
         data["session_token"] = token
     return data
@@ -405,7 +431,7 @@ class BodyLimitMiddleware:
         return await self.app(scope, bounded_receive, send)
 
 
-def create_app(*, settings=None, provider=None):
+def create_app(*, settings=None, provider=None, business=None, agent_provider=None):
     settings = settings or Settings()
     provider = provider or DeepSeekAdapter(None)
     app = FastAPI(title="Ready Gym development intake", version="0.1.0")
@@ -490,6 +516,7 @@ def create_app(*, settings=None, provider=None):
             raise HTTPException(429, "app_call_limit")
         if semaphore.locked():
             raise HTTPException(429, "provider_busy")
+        previous_in_flight = session.in_flight
         session.in_flight = True
         try:
             async with semaphore:
@@ -501,7 +528,7 @@ def create_app(*, settings=None, provider=None):
                 for key in session.usage:
                     session.usage[key] += usage[key]
                 try:
-                    if initial and (patch or clarification):
+                    if initial and patch:
                         raise ValueError("initial response cannot invent profile")
                     validated = validate_patch(session.profile, patch)
                     if any(patch.get(key) is not None for key in unsupported):
@@ -518,7 +545,7 @@ def create_app(*, settings=None, provider=None):
                 except ValueError:
                     raise HTTPException(502, "provider_invalid_response") from None
         finally:
-            session.in_flight = False
+            session.in_flight = previous_in_flight
         session.profile = validated
         session.clarification_fields.difference_update(key for key, value in patch.items() if value is not None)
         session.clarification_fields.update(clarification)
@@ -527,6 +554,8 @@ def create_app(*, settings=None, provider=None):
         session.confirmed = False
         session.asked_fields = view(session, "")["missing_fields"][:3]
 
+
+    app.state.process_intake_turn = turn
 
     @app.post("/api/intake/sessions", status_code=201, response_model=StartResponse, responses=ERROR_RESPONSES)
     async def start(body: StartRequest):
@@ -557,15 +586,21 @@ def create_app(*, settings=None, provider=None):
     async def get(session_id: str, authorization: str | None = Depends(auth_header)):
         return view(authorize(session_id, authorization), session_id)
 
-    @app.post("/api/intake/sessions/{session_id}/messages", response_model=IntakeResponse, responses=ERROR_RESPONSES)
+    @app.post("/api/intake/sessions/{session_id}/messages", response_model=IntakeResponse, responses=ERROR_RESPONSES,
+              description="Legacy intake message. Foundation-enabled sessions return 409 foundation_required without modifying profile or plans; use /foundation/messages instead.")
     async def message(session_id: str, body: MessageRequest, authorization: str | None = Depends(auth_header)):
         session = authorize(session_id, authorization)
+        if session.foundation_enabled:
+            raise HTTPException(409, "foundation_required")
         await turn(session, body.message)
         return view(authorize(session_id, authorization), session_id)
 
-    @app.post("/api/intake/sessions/{session_id}/confirm", response_model=IntakeResponse, responses=ERROR_RESPONSES)
+    @app.post("/api/intake/sessions/{session_id}/confirm", response_model=IntakeResponse, responses=ERROR_RESPONSES,
+              description="Legacy profile confirmation. Foundation-enabled sessions return 409 foundation_required; use /foundation/confirm-profile to confirm the matching business profile.")
     async def confirm(session_id: str, body: ConfirmRequest, authorization: str | None = Depends(auth_header)):
         session = authorize(session_id, authorization)
+        if session.foundation_enabled:
+            raise HTTPException(409, "foundation_required")
         if not body.confirmed:
             raise HTTPException(403, "confirmation_required")
         if body.expected_revision != session.revision:
@@ -578,8 +613,26 @@ def create_app(*, settings=None, provider=None):
     @app.delete("/api/intake/sessions/{session_id}", status_code=204, responses=ERROR_RESPONSES)
     async def delete(session_id: str, authorization: str | None = Depends(auth_header)):
         authorize(session_id, authorization)
+        if business is not None:
+            try:
+                await business.call("/internal/sessions/" + session_id, method="DELETE")
+            except HTTPException as exc:
+                if exc.status_code != 404:
+                    raise
+            try:
+                await business.call("/internal/sessions/" + session_id, method="GET")
+            except HTTPException as exc:
+                if exc.status_code != 404:
+                    raise
+            else:
+                raise HTTPException(502, "deletion_not_verified")
         del sessions[session_id]
         return Response(status_code=204)
+
+    if business is not None:
+        from ready_gym_foundation import install_foundation_routes
+        install_foundation_routes(app, business=business, provider=agent_provider,
+            settings=settings, semaphore=semaphore, authorize=authorize, auth_header=auth_header)
 
     return app
 

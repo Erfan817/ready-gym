@@ -18,7 +18,9 @@ data class CoachSession(val id: String, val token: String) {
 }
 data class CoachReply(val session: CoachSession, val assistantText: String, val status: String,
     val confirmedCandidate: CoachCandidate? = null, val revision: Int? = null, val confirmed: Boolean = false,
-    val responseSource: String? = null, val safetyRoute: CoachSafetyRoute? = null)
+    val responseSource: String? = null, val safetyRoute: CoachSafetyRoute? = null,
+    val foundationEnabled: Boolean = false, val planProposal: FoundationPlan? = null, val activePlan: FoundationPlan? = null,
+    val toolTrace: List<FoundationToolTrace> = emptyList(), val agentSource: String? = null, val agentNotice: String? = null)
 
 /** Bounded server policy, not a diagnosis or an inference from assistant prose. */
 enum class CoachSafetyRoute(val wireValue: String) {
@@ -37,6 +39,9 @@ enum class CoachSafetyRoute(val wireValue: String) {
 }
 data class CoachCandidate(val profile: TrainingProfile, val preferences: PlanningPreferences)
 interface CoachClient {
+    val supportsFoundation: Boolean get() = false
+    suspend fun readFoundation(session: CoachSession): CoachReply = throw CoachException("foundation_not_supported")
+    suspend fun confirmPlan(reply: CoachReply): CoachReply = throw CoachException("confirmation_not_supported")
     suspend fun confirm(reply: CoachReply): CoachReply = throw CoachException("confirmation_not_supported")
     suspend fun delete(session: CoachSession): Unit = throw CoachException("deletion_not_supported")
     suspend fun start(): CoachReply
@@ -45,7 +50,10 @@ interface CoachClient {
 private fun unverifiedCoachSafety() = SafetyFeedback(screenCompleted = true,
     medicalRestrictions = "服务端安全契约无法核实：暂停普通训练并寻求专业评估，不作诊断")
 
-class HttpCoachClient(private val baseUrl: String = "", private val debug: Boolean = false) : CoachClient {
+class HttpCoachClient(private val baseUrl: String = "", private val debug: Boolean = false,
+    override val supportsFoundation: Boolean = false, private val demoAccessCode: String = "") : CoachClient {
+    private val foundationSessions = mutableSetOf<String>()
+    private val uncertainPlans = mutableMapOf<String, CoachReply>()
     /** One boundary for transport decoding, structured parsing and confirmation readback. */
     private suspend fun checkedIntakeResponse(block: suspend () -> CoachReply): CoachReply = try {
         block()
@@ -60,17 +68,65 @@ class HttpCoachClient(private val baseUrl: String = "", private val debug: Boole
     }
     override suspend fun message(session: CoachSession, text: String): CoachReply = checkedIntakeResponse {
         if (text.isBlank() || text.length > 1000) throw CoachException("invalid_input")
-        parseReply(exchange("POST", path(session) + "/messages", JSONObject().put("message", text), session), session)
+        parseReply(exchange("POST", path(session) + if (session.id in foundationSessions) "/foundation/messages" else "/messages", JSONObject().put("message", text), session), session)
     }
     override suspend fun confirm(reply: CoachReply): CoachReply = checkedIntakeResponse {
         if (reply.status != "ready" || reply.safetyRoute != null || reply.confirmedCandidate == null || reply.revision == null) throw CoachException("invalid_response", safetyFeedback = reply.safetyRoute?.localFeedback())
-        val posted = parseReply(exchange("POST", path(reply.session) + "/confirm",
+        val foundation = supportsFoundation || reply.foundationEnabled
+        val posted = parseReply(exchange("POST", path(reply.session) + if (foundation) "/foundation/confirm-profile" else "/confirm",
             JSONObject().put("confirmed", true).put("expected_revision", reply.revision), reply.session), reply.session)
         posted.safetyRoute?.let { throw CoachException("invalid_response", safetyFeedback = it.localFeedback()) }
         if (!posted.confirmed || posted.revision != reply.revision || posted.confirmedCandidate != reply.confirmedCandidate) throw CoachException("invalid_response")
-        val verified = parseReply(exchange("GET", path(reply.session), null, reply.session), reply.session)
+        val verified = parseReply(exchange("GET", path(reply.session) + if (foundation) "/foundation" else "", null, reply.session), reply.session)
         verified.safetyRoute?.let { throw CoachException("invalid_response", safetyFeedback = it.localFeedback()) }
         if (!verified.confirmed || verified.revision != reply.revision || verified.confirmedCandidate != reply.confirmedCandidate) throw CoachException("invalid_response")
+        if (foundation) {
+            if (!verified.foundationEnabled || verified.planProposal != posted.planProposal || verified.activePlan != posted.activePlan) throw CoachException("invalid_response")
+            foundationSessions.add(reply.session.id)
+        }
+        verified
+    }
+    override suspend fun readFoundation(session: CoachSession): CoachReply = checkedIntakeResponse {
+        val verified = parseReply(exchange("GET", path(session) + "/foundation", null, session), session)
+        if (!verified.foundationEnabled) throw CoachException("invalid_response")
+        val uncertain = uncertainPlans[session.id]
+        if (uncertain != null) {
+            checkPlanProfile(verified, uncertain)
+            val draft = requireNotNull(uncertain.planProposal)
+            if (verified.activePlan == draft.copy(status = "confirmed")) checkConfirmedPlanSnapshot(verified, uncertain)
+            else if (verified.planProposal != draft || verified.activePlan != uncertain.activePlan) throw CoachException("invalid_response")
+        }
+        // Failed GETs and mismatched snapshots must retain the expected profile and draft.
+        uncertainPlans.remove(session.id)
+        if (verified.confirmed) foundationSessions.add(session.id)
+        verified
+    }
+    private fun checkPlanProfile(accepted: CoachReply, reviewed: CoachReply) {
+        accepted.safetyRoute?.let { throw CoachException("invalid_response", safetyFeedback = it.localFeedback()) }
+        if (!accepted.foundationEnabled || !accepted.confirmed || accepted.status != "ready" ||
+            accepted.confirmedCandidate != reviewed.confirmedCandidate || accepted.revision != reviewed.revision) throw CoachException("invalid_response")
+    }
+    private fun checkConfirmedPlanSnapshot(accepted: CoachReply, reviewed: CoachReply) {
+        checkPlanProfile(accepted, reviewed)
+        // Equality covers the parsed client schema, not unmodelled server metadata/budget fields.
+        if (accepted.activePlan != requireNotNull(reviewed.planProposal).copy(status = "confirmed") || accepted.planProposal != null) throw CoachException("invalid_response")
+    }
+    override suspend fun confirmPlan(reply: CoachReply): CoachReply = checkedIntakeResponse {
+        val draft = reply.planProposal ?: throw CoachException("invalid_response")
+        if (!reply.foundationEnabled || !reply.confirmed || reply.status != "ready" || reply.confirmedCandidate == null || reply.revision == null || reply.safetyRoute != null || draft.status != "draft") throw CoachException("invalid_response", safetyFeedback = reply.safetyRoute?.localFeedback())
+        if (reply.session.id in uncertainPlans) throw CoachException("plan_confirmation_unknown")
+        uncertainPlans[reply.session.id] = reply
+        val posted = parseReply(exchange("POST", path(reply.session) + "/foundation/confirm-plan",
+            JSONObject().put("confirmed", true).put("draft_id", draft.id).put("expected_revision", draft.revision), reply.session), reply.session)
+        checkConfirmedPlanSnapshot(posted, reply)
+        // Normal confirmation requires a confirmed final snapshot, not recovery's
+        // alternative proof that the original draft still exists unadopted.
+        val verified = parseReply(exchange("GET", path(reply.session) + "/foundation", null, reply.session), reply.session)
+        checkConfirmedPlanSnapshot(verified, reply)
+        // Clear only after every normal-path check succeeds; a stale GET retains
+        // original profile/revision/draft for later independent recovery.
+        uncertainPlans.remove(reply.session.id)
+        foundationSessions.add(reply.session.id)
         verified
     }
     override suspend fun delete(session: CoachSession) {
@@ -135,7 +191,7 @@ class HttpCoachClient(private val baseUrl: String = "", private val debug: Boole
             val revision = if (!json.has("revision")) null else (json.get("revision") as? Number)?.toDouble()?.takeIf { it >= 0 && it == it.toInt().toDouble() }?.toInt() ?: throw CoachException("invalid_response")
             val confirmed = if (!json.has("confirmed")) false else json.get("confirmed") as? Boolean ?: throw CoachException("invalid_response")
             val source = if (!json.has("response_source")) null else string("response_source")
-            return CoachReply(current, text, status, candidate, revision, confirmed, source, route)
+            return FoundationContract.extras(json, CoachReply(current, text, status, candidate, revision, confirmed, source, route))
         } catch (_: JSONException) { throw CoachException("invalid_response", safetyFeedback = safetyOnFailure) }
         catch (e: CoachException) {
             // Every value validated inside this parser came from the response.
@@ -146,16 +202,17 @@ class HttpCoachClient(private val baseUrl: String = "", private val debug: Boole
     }
     private suspend fun exchange(method: String, path: String, body: JSONObject?, session: CoachSession?): JSONObject = withContext(Dispatchers.IO) {
         if (baseUrl.isBlank()) throw CoachException("api_config_not_set")
-        val root = try { URI(baseUrl) } catch (_: Exception) { throw CoachException("insecure_endpoint") }
-        val loopback = root.host in setOf("localhost", "127.0.0.1")
-        if (root.host.isNullOrBlank() || root.rawUserInfo != null || root.rawQuery != null || root.rawFragment != null || root.path !in listOf("", "/") ||
-            (root.scheme != "https" && !(root.scheme == "http" && debug && loopback))) throw CoachException("insecure_endpoint")
-        val connection = root.resolve(path).toURL().openConnection() as HttpURLConnection
+        val root = DemoEndpoint.validate(baseUrl, debug)
+        val connection = URI(root.toASCIIString().trimEnd('/') + path).toURL().openConnection() as HttpURLConnection
         try {
             connection.requestMethod = method
             connection.connectTimeout = 10_000; connection.readTimeout = 30_000
             connection.instanceFollowRedirects = false
             connection.setRequestProperty("Accept", "application/json")
+            if (demoAccessCode.isNotEmpty()) {
+                if (demoAccessCode.length > 256 || demoAccessCode.any { it.code !in 33..126 }) throw CoachException("invalid_demo_config")
+                connection.setRequestProperty("X-Ready-Gym-Demo", demoAccessCode)
+            }
             session?.let { connection.setRequestProperty("Authorization", "Bearer ${it.token}") }
             if (body != null) {
                 connection.doOutput = true
